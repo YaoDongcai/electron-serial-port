@@ -1,0 +1,44 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "452835",
+      "name": "发射",
+      "font_class": "003",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "3948647",
+      "name": "打开",
+      "font_class": "dakai",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "8835029",
+      "name": "串口",
+      "font_class": "chuankou",
+      "unicode": "e658",
+      "unicode_decimal": 58968
+    },
+    {
+      "icon_id": "8921878",
+      "name": "接收",
+      "font_class": "jieshou",
+      "unicode": "e898",
+      "unicode_decimal": 59544
+    },
+    {
+      "icon_id": "11598522",
+      "name": "关 闭 ",
+      "font_class": "guanbi",
+      "unicode": "e50c",
+      "unicode_decimal": 58636
+    }
+  ]
+}
