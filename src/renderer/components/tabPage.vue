@@ -33,7 +33,9 @@
               <serial-config></serial-config>
               </el-tab-pane>
           <el-tab-pane label="GPS设置">GPS设置</el-tab-pane>
-          <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
+          <el-tab-pane label="日志设置">
+            <serial-log></serial-log>
+          </el-tab-pane>
         </el-tabs>
       </el-col>
     </el-row>
@@ -41,33 +43,43 @@
 </template>
 
 <script>
-import SendView from './sendVIew'
+import SendView from './sendView'
 import SerialConfig from './serialConfig'
+import SerialLog from './serialLog'
+import { mapState } from 'vuex'
 export default {
-  name: "tabPage",
+  name: 'tabPage',
   components: {
-      SendView,
-      SerialConfig
+    SendView,
+    SerialConfig,
+    SerialLog
   },
-  data() {
+  computed: {
+    ...mapState({
+      isOpenSerialPort: state => state.SerialPort.isOpenSerialPort
+    })
+  },
+  data () {
     return {
-        choiseName: "设备选择",
-    };
+      choiseName: '设备选择'
+    }
   },
-  created() {},
+  created () {
+    console.log('isOpenSerialPort', this.isOpenSerialPort)
+  },
   methods: {
-      handleCommand(value) {
+    handleCommand (value) {
       switch (value) {
-        case "send":
-          this.choiseName = "发射机";
-          break;
-        case "receive":
-          this.choiseName = "接收机";
-          break;
+        case 'send':
+          this.choiseName = '发射机'
+          break
+        case 'receive':
+          this.choiseName = '接收机'
+          break
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

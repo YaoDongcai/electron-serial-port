@@ -4,7 +4,10 @@
 # npm config -g set unsafe-perm 解决npm安装错误的问题
 # https://blog.csdn.net/u010942902/article/details/88410978 解决了安装nvm的问题
 #### Build Setup
+# npm install --save-dev electron-rebuild
 
+# 每次运行"npm install"后，也运行这条命令
+#./node_modules/.bin/electron-rebuild 
 ``` bash
 # install dependencies
 npm install

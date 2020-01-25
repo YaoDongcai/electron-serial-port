@@ -8,21 +8,10 @@
 
 <script>
 import TabPage from './tabPage'
-const SerialPort = require('serialport')
 export default {
   name: 'landing-page',
   components: { TabPage },
   created () {
-    // console.log('created')
-    // SerialPort.list(function (err, ports) {
-    //   console.log(err)
-    //   console.log('portslist')
-    //   ports.forEach(function (port) {
-    //     console.log(port.comName)
-    //     console.log(port.pnpId)
-    //     console.log(port.manufacturer)
-    //   })
-    // })
   },
   methods: {
     open (link) {

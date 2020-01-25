@@ -6,7 +6,6 @@
   "license": "ISC",
   "main": "./dist/electron/main.js",
   "scripts": {
-    "rebuild": "cnpm rebuild --runtime=electron --target=1.4.13 --disturl=https://atom.io/download/atom-shell --abi=57",
     "build": "node .electron-vue/build.js && electron-builder",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
@@ -21,7 +20,7 @@
   },
   "build": {
     "productName": "electron-linux-serialport-app",
-    "appId": "com.example.yourapp",
+    "appId": "org.dcyao.serialport",
     "directories": {
       "output": "build"
     },
@@ -56,6 +55,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "element-ui": "^2.13.0",
+    "nedb": "^1.8.0",
     "serialport": "^7.1.5",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",

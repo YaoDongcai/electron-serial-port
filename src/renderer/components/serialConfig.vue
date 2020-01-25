@@ -8,7 +8,7 @@
       class="serial-config-form"
     >
       <el-form-item label="串口名称" prop="name">
-        <el-select :disabled="isDisabled" v-model="configForm.name" placeholder="请选择活动区域">
+        <el-select :disabled="isDisabled" v-model="configForm.name" placeholder="请选择串口">
           <el-option label="区域一" value="shanghai"></el-option>
         </el-select>
       </el-form-item>
@@ -62,43 +62,57 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+const SerialPort = require('serialport')
 export default {
-  name: "serialConfig",
-  data() {
+  name: 'serialConfig',
+  data () {
     return {
       isDisabled: false,
       configForm: {
-        name: "",
+        name: '',
         baudrate: 9600,
         databits: 8,
-        checkDigit: "None",
+        checkDigit: 'None',
         stopBit: 1
       },
       configRules: {
-        name: [{ required: true, message: "请选择串口名称", trigger: "change" }]
+        name: [{ required: true, message: '请选择串口名称', trigger: 'change' }]
       }
-    };
+    }
   },
-  created() {
+  created () {
     // 此时先要获取打开的端口有哪些
+    // console.log('created')
+    SerialPort.list(function (err, ports) {
+      console.log(err)
+      console.log('portslist')
+      ports.forEach(function (port) {
+        console.log(port.comName)
+        console.log(port.pnpId)
+        console.log(port.manufacturer)
+      })
+    })
   },
   methods: {
-    closeSerialPort() {
+    ...mapMutations(['setSerialPort']),
+    closeSerialPort () {
       // 关闭为
-      this.isDisabled = false;
+      this.isDisabled = false
     },
-    openSerialPort(formName) {
+    openSerialPort (formName) {
+      this.setSerialPort(true)
       // 表示打开成功 那么这些串口就需要disabled
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.isDisabled = true;
+          this.isDisabled = true
         } else {
-          return false;
+          return false
         }
-      });
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
