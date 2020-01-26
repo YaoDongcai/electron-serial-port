@@ -55,12 +55,15 @@ export default {
       isOpenSerialPort: state => state.SerialPort.isOpenSerialPort
     })
   },
-  created () {},
+  created () {
+    console.log('created', this.isOpenSerialPort)
+  },
   methods: {
     // 发送按钮
     sendTextarea () {
       // 先要检测是否打开串口
       if (this.isOpenSerialPort) {
+        console.log('sendTextarea isOpenSerialPort', this.isOpenSerialPort)
         // ok
       } else {
         // 提醒用户需要打开串口

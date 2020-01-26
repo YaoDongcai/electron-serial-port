@@ -46,7 +46,7 @@
 import SendView from './sendView'
 import SerialConfig from './serialConfig'
 import SerialLog from './serialLog'
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 export default {
   name: 'tabPage',
   components: {
@@ -65,9 +65,10 @@ export default {
     }
   },
   created () {
-    console.log('isOpenSerialPort', this.isOpenSerialPort)
+    this.setSerialPort(false)
   },
   methods: {
+    ...mapMutations(['setSerialPort']),
     handleCommand (value) {
       switch (value) {
         case 'send':

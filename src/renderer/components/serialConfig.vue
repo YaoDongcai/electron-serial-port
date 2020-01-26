@@ -9,7 +9,7 @@
     >
       <el-form-item label="串口名称" prop="name">
         <el-select :disabled="isDisabled" v-model="configForm.name" placeholder="请选择串口">
-          <el-option label="区域一" value="shanghai"></el-option>
+          <el-option :key="index" v-for="(item, index) in serialPortList" :label="item.label" :value="item.value"></el-option>
         </el-select>
       </el-form-item>
 
@@ -68,14 +68,16 @@ export default {
   name: 'serialConfig',
   data () {
     return {
-      isDisabled: false,
-      configForm: {
+      serialPortList: [], // 端口列表
+      isDisabled: false, /// 限制开启
+      configForm: {  // 端口创建控制
         name: '',
         baudrate: 9600,
         databits: 8,
         checkDigit: 'None',
         stopBit: 1
       },
+      // form表单校验
       configRules: {
         name: [{ required: true, message: '请选择串口名称', trigger: 'change' }]
       }
@@ -83,11 +85,14 @@ export default {
   },
   created () {
     // 此时先要获取打开的端口有哪些
-    // console.log('created')
+    const self = this
+    self.serialPortList = [] // 初始化
     SerialPort.list(function (err, ports) {
-      console.log(err)
-      console.log('portslist')
       ports.forEach(function (port) {
+        self.serialPortList.push( {
+          label: port.comName,
+          value: port.pnpId
+        })
         console.log(port.comName)
         console.log(port.pnpId)
         console.log(port.manufacturer)
@@ -96,6 +101,20 @@ export default {
   },
   methods: {
     ...mapMutations(['setSerialPort']),
+    // 通过portname 端口打开这个端口
+    openSerialPortByPortName(portName) {
+      let port = new SerialPort(portName + '')
+      // 连接成功后 绑定事件监听
+      let callback = function() {
+        
+      }
+      // 建立建立的时候
+      port.on('open', callback)
+      // 建立接收到数据时
+      port.on('data', callback)
+      // 出现错误的时候
+      port.on('error', callback)
+    },
     closeSerialPort () {
       // 关闭为
       this.isDisabled = false
