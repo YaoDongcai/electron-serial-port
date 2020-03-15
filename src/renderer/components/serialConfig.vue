@@ -87,15 +87,17 @@ export default {
     // 此时先要获取打开的端口有哪些
     const self = this
     self.serialPortList = [] // 初始化
+    let index = 0
     SerialPort.list(function (err, ports) {
       ports.forEach(function (port) {
+        console.log('port', port)
         self.serialPortList.push( {
           label: port.comName,
-          value: port.pnpId
+          value: port.comName
         })
-        console.log(port.comName)
-        console.log(port.pnpId)
-        console.log(port.manufacturer)
+        // console.log(port.comName)
+        // console.log(port.pnpId)
+        // console.log(port.manufacturer)
       })
     })
   },
@@ -103,17 +105,38 @@ export default {
     ...mapMutations(['setSerialPort']),
     // 通过portname 端口打开这个端口
     openSerialPortByPortName(portName) {
-      let port = new SerialPort(portName + '')
+      console.log('portName', portName)
+      let port = new SerialPort(portName + '', {
+        baudRate: 9600,
+        dataBits: 8,
+        parity: 'none',
+        stopBits: 1,
+        flowControl: false
+      }, false)
       // 连接成功后 绑定事件监听
-      let callback = function() {
-        
-      }
       // 建立建立的时候
-      port.on('open', callback)
+      port.on('open', (value) => {
+        console.log('open', value)
+      })
       // 建立接收到数据时
-      port.on('data', callback)
+      port.on('data', (data) => {
+        console.log('data', data)
+      })
       // 出现错误的时候
-      port.on('error', callback)
+      port.on('error', (error) => {
+        console.log('error', error)
+      })
+
+      setTimeout(() => {
+        port.write('12312312322', err => {
+          console.log('err', err)
+          if(err) {
+            return console.log('write Error', err.message)
+          }else {
+            console.log('写入成功')
+          }
+        })
+      }, 2000)
     },
     closeSerialPort () {
       // 关闭为
@@ -124,6 +147,9 @@ export default {
       // 表示打开成功 那么这些串口就需要disabled
       this.$refs[formName].validate(valid => {
         if (valid) {
+          this.setSerialPort(true)
+          console.log('this.name', this.configForm.name)
+          this.openSerialPortByPortName(this.configForm.name)
           this.isDisabled = true
         } else {
           return false
