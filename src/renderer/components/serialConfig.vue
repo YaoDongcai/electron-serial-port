@@ -36,9 +36,9 @@
 
       <el-form-item label="校验位" prop="checkDigit">
         <el-select :disabled="isDisabled" v-model="configForm.checkDigit" placeholder="请选择校验位">
-          <el-option label="None" value="None"></el-option>
-          <el-option label="Odd" value="Odd"></el-option>
-          <el-option label="Even" value="Even"></el-option>
+          <el-option label="None" value="none"></el-option>
+          <el-option label="Odd" value="odd"></el-option>
+          <el-option label="Even" value="even"></el-option>
         </el-select>
       </el-form-item>
 
@@ -64,6 +64,7 @@
 <script>
 import { mapMutations } from 'vuex'
 const SerialPort = require('serialport')
+import Bus from '../utils/bus.js'
 export default {
   name: 'serialConfig',
   data () {
@@ -74,7 +75,7 @@ export default {
         name: '',
         baudrate: 9600,
         databits: 8,
-        checkDigit: 'None',
+        checkDigit: 'none',
         stopBit: 1
       },
       // form表单校验
@@ -86,7 +87,19 @@ export default {
   created () {
     // 此时先要获取打开的端口有哪些
     const self = this
+    Bus.$on('sendData', (value) => {
+      // 获取到这个数据
+      this.port.write(value.value,value.sendType, err => {
+            console.log('err', err)
+            if(err) {
+              return console.log('write Error', err.message)
+            }else {
+              console.log('写入成功')
+            }
+          })
+    })
     self.serialPortList = [] // 初始化
+    // 获取串口数据
     let index = 0
     SerialPort.list(function (err, ports) {
       ports.forEach(function (port) {
@@ -95,24 +108,24 @@ export default {
           label: port.comName,
           value: port.comName
         })
-        // console.log(port.comName)
-        // console.log(port.pnpId)
-        // console.log(port.manufacturer)
       })
     })
   },
   methods: {
-    ...mapMutations(['setSerialPort']),
+    ...mapMutations(['setSerialPort','setSerialPortHandle']),
     // 通过portname 端口打开这个端口
     openSerialPortByPortName(portName) {
       console.log('portName', portName)
       let port = new SerialPort(portName + '', {
-        baudRate: 9600,
-        dataBits: 8,
-        parity: 'none',
-        stopBits: 1,
+        baudRate: this.configForm.baudrate, // 传输率
+        dataBits: this.configForm.databits, // 数据位数
+        parity: this.configForm.checkDigit,
+        stopBits: this.configForm.stopBit, // 停止位
         flowControl: false
       }, false)
+
+      this.port = port
+
       // 连接成功后 绑定事件监听
       // 建立建立的时候
       port.on('open', (value) => {
@@ -120,27 +133,43 @@ export default {
       })
       // 建立接收到数据时
       port.on('data', (data) => {
-        console.log('data', data)
+        // 需要在这个时候把数据传递给那边
+        // 接收数据
+        bus.$emit('receive', data)
       })
       // 出现错误的时候
       port.on('error', (error) => {
         console.log('error', error)
       })
-
+      
+      // 表示延迟去发送数据
       setTimeout(() => {
-        port.write('12312312322', err => {
-          console.log('err', err)
-          if(err) {
-            return console.log('write Error', err.message)
-          }else {
-            console.log('写入成功')
-          }
-        })
+        // 这个是变成了16进制的数据
+        // 需要这个时候获取到数据 也要传递到那边
+        // 发送的8位数字
+       let str = "FF010020000021";
+       let stopStr = "FF010000000001"
+
+       port.write(str + stopStr,'hex', err => {
+            console.log('err', err)
+            if(err) {
+              return console.log('write Error', err.message)
+            }else {
+              console.log('写入成功')
+            }
+          })
       }, 2000)
     },
     closeSerialPort () {
       // 关闭为
       this.isDisabled = false
+      // 同时需要将port的串口方法调用
+      this.port.close(() => {
+        // 关闭成功后调用
+        this.setSerialPort(false)
+      })
+      // 开始设置串口的数据为空
+      
     },
     openSerialPort (formName) {
       this.setSerialPort(true)

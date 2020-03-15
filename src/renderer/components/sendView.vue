@@ -25,6 +25,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import Bus from '../utils/bus.js'
 export default {
   name: 'SendView',
   data () {
@@ -56,6 +57,10 @@ export default {
     })
   },
   created () {
+    // 表示在接收数据
+    bus.$on('receive', (data) => {
+
+    })
     console.log('created', this.isOpenSerialPort)
   },
   methods: {
@@ -64,6 +69,12 @@ export default {
       // 先要检测是否打开串口
       if (this.isOpenSerialPort) {
         console.log('sendTextarea isOpenSerialPort', this.isOpenSerialPort)
+        // 利用事件去请求数据传送
+        Bus.$emit('sendData', {
+          'sendType': 'hex', // 表示为16进制
+          'value': '123123' // 表示为发送的值
+        })
+
         // ok
       } else {
         // 提醒用户需要打开串口
