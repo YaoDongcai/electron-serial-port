@@ -63,15 +63,15 @@
 
 <script>
 import { mapMutations } from 'vuex'
-const SerialPort = require('serialport')
 import Bus from '../utils/bus.js'
+const SerialPort = require('serialport')
 export default {
   name: 'serialConfig',
   data () {
     return {
       serialPortList: [], // 端口列表
       isDisabled: false, /// 限制开启
-      configForm: {  // 端口创建控制
+      configForm: { // 端口创建控制
         name: '',
         baudrate: 9600,
         databits: 8,
@@ -89,22 +89,25 @@ export default {
     const self = this
     Bus.$on('sendData', (value) => {
       // 获取到这个数据
-      this.port.write(value.value,value.sendType, err => {
-            console.log('err', err)
-            if(err) {
-              return console.log('write Error', err.message)
-            }else {
-              console.log('写入成功')
-            }
-          })
+      this.port.write(value.value, value.sendType, err => {
+        console.log('err', err)
+        if (err) {
+          return console.log('write Error', err.message)
+        } else {
+          console.log('写入成功')
+        }
+      })
     })
     self.serialPortList = [] // 初始化
     // 获取串口数据
-    let index = 0
+    // let index = 0
     SerialPort.list(function (err, ports) {
+      if (err) {
+        console.log('err', err)
+      }
       ports.forEach(function (port) {
         console.log('port', port)
-        self.serialPortList.push( {
+        self.serialPortList.push({
           label: port.comName,
           value: port.comName
         })
@@ -112,9 +115,9 @@ export default {
     })
   },
   methods: {
-    ...mapMutations(['setSerialPort','setSerialPortHandle']),
+    ...mapMutations(['setSerialPort', 'setSerialPortHandle']),
     // 通过portname 端口打开这个端口
-    openSerialPortByPortName(portName) {
+    openSerialPortByPortName (portName) {
       console.log('portName', portName)
       let port = new SerialPort(portName + '', {
         baudRate: this.configForm.baudrate, // 传输率
@@ -135,29 +138,29 @@ export default {
       port.on('data', (data) => {
         // 需要在这个时候把数据传递给那边
         // 接收数据
-        bus.$emit('receive', data)
+        Bus.$emit('receive', data)
       })
       // 出现错误的时候
       port.on('error', (error) => {
         console.log('error', error)
       })
-      
+
       // 表示延迟去发送数据
       setTimeout(() => {
         // 这个是变成了16进制的数据
         // 需要这个时候获取到数据 也要传递到那边
         // 发送的8位数字
-       let str = "FF010020000021";
-       let stopStr = "FF010000000001"
+        let str = 'FF010020000021'
+        let stopStr = 'FF010000000001'
 
-       port.write(str + stopStr,'hex', err => {
-            console.log('err', err)
-            if(err) {
-              return console.log('write Error', err.message)
-            }else {
-              console.log('写入成功')
-            }
-          })
+        port.write(str + stopStr, 'hex', err => {
+          console.log('err', err)
+          if (err) {
+            return console.log('write Error', err.message)
+          } else {
+            console.log('写入成功')
+          }
+        })
       }, 2000)
     },
     closeSerialPort () {
@@ -169,7 +172,6 @@ export default {
         this.setSerialPort(false)
       })
       // 开始设置串口的数据为空
-      
     },
     openSerialPort (formName) {
       this.setSerialPort(true)

@@ -58,7 +58,7 @@ export default {
   },
   created () {
     // 表示在接收数据
-    bus.$on('receive', (data) => {
+    Bus.$on('receive', (data) => {
 
     })
     console.log('created', this.isOpenSerialPort)
