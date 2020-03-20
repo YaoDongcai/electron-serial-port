@@ -32,7 +32,9 @@
               </span>
               <serial-config></serial-config>
               </el-tab-pane>
-          <el-tab-pane label="GPS设置">GPS设置</el-tab-pane>
+          <el-tab-pane label="索尼摄像头控制">
+              <camera-ctrl></camera-ctrl>
+          </el-tab-pane>
           <el-tab-pane label="日志设置">
             <serial-log></serial-log>
           </el-tab-pane>
@@ -46,13 +48,15 @@
 import SendView from './sendView'
 import SerialConfig from './serialConfig'
 import SerialLog from './serialLog'
+import CameraCtrl from './cameraCtrl'
 import { mapState, mapMutations } from 'vuex'
 export default {
   name: 'tabPage',
   components: {
     SendView,
     SerialConfig,
-    SerialLog
+    SerialLog,
+    CameraCtrl
   },
   computed: {
     ...mapState({
@@ -87,7 +91,7 @@ export default {
 .tab-page {
     width: 660px;
   .tab-page-row {
-      
+
   }
 }
 </style>
