@@ -51,6 +51,7 @@
 
 <script>
   import Bus from '../utils/bus.js'
+  import { mapState } from 'vuex'
   export default {
     name: 'cameraCtrl', // 摄像头控制命令
     data () {
@@ -70,15 +71,32 @@
         }
       }
     },
+    computed: {
+      ...mapState({
+        isOpenSerialPort: state => state.SerialPort.isOpenSerialPort
+      })
+    },
     methods: {
       // 点击事件触发发送数据
       handleClick (type) {
+        // 先检测串口是否打开 如果没有打开 那么提醒用户去打开串口
+        if (!this.isOpenSerialPort) {
+          // 提醒用户
+          this.$message.warning('请打开串口')
+          return
+        }
         let message = '' // 暂时为空的数据
         message = this.sendData[type + '']
         // 获取数据后需要把这个信息发送数据 同时需要延时发送停止位
-        Bus.$emit('sendData', message) // 过20ms 发送停止位
+        Bus.$emit('sendData', {
+          'sendType': 'hex', // 表示为16进制
+          'value': message // 表示为发送的值
+        }) // 过20ms 发送停止位
         setTimeout(() => {
-          Bus.$emit('sendData', this.sendData.STOP)
+          Bus.$emit('sendData', {
+            'sendType': 'hex', // 表示为16进制
+            'value': this.sendData.STOP // 表示为发送的值
+          })
         }, 20)
       }
     }
@@ -101,6 +119,7 @@
         overflow: hidden;
         transform-origin: center;
         transform: rotate(45deg);
+        cursor: pointer;
     }
     .inner-parts {
         float: left;

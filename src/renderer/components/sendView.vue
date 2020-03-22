@@ -15,7 +15,7 @@
         </el-radio-group>
 
         <div class="send-group-btn">
-          <el-button type="primary" @click="sendTextarea" size="small">发送</el-button>
+          <el-button type="primary" :disabled="textarea.length == 0" @click="sendTextarea" size="small">发送</el-button>
           <el-button type="default" @click="clearTextarea" size="small">清空</el-button>
         </div>
       </el-col>
@@ -37,16 +37,6 @@ export default {
           id: 1,
           name: '十六进制',
           value: 'hex'
-        },
-        {
-          id: 2,
-          name: '二进制',
-          value: 'double'
-        },
-        {
-          id: 3,
-          name: '字符',
-          value: 'str'
         }
       ]
     }
@@ -59,22 +49,20 @@ export default {
   created () {
     // 表示在接收数据
     Bus.$on('receive', (data) => {
-
+      this.textarea += data.toString('hex')
+      this.textarea +='\n' // 换行符号
     })
-    console.log('created', this.isOpenSerialPort)
   },
   methods: {
     // 发送按钮
     sendTextarea () {
       // 先要检测是否打开串口
       if (this.isOpenSerialPort) {
-        console.log('sendTextarea isOpenSerialPort', this.isOpenSerialPort)
         // 利用事件去请求数据传送
         Bus.$emit('sendData', {
           'sendType': 'hex', // 表示为16进制
-          'value': '123123' // 表示为发送的值
+          'value': this.textarea // 表示为发送的值
         })
-
         // ok
       } else {
         // 提醒用户需要打开串口

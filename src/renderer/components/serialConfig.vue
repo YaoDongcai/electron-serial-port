@@ -89,6 +89,7 @@ export default {
     const self = this
     Bus.$on('sendData', (value) => {
       // 获取到这个数据
+      console.log('value')
       this.port.write(value.value, value.sendType, err => {
         console.log('err', err)
         if (err) {
@@ -133,6 +134,8 @@ export default {
       // 建立建立的时候
       port.on('open', (value) => {
         console.log('open', value)
+        // 提示用户 串口打开成功
+        this.$message.success('串口打开成功')
       })
       // 建立接收到数据时
       port.on('data', (data) => {
@@ -146,22 +149,22 @@ export default {
       })
 
       // 表示延迟去发送数据
-      setTimeout(() => {
-        // 这个是变成了16进制的数据
-        // 需要这个时候获取到数据 也要传递到那边
-        // 发送的8位数字
-        let str = 'FF010020000021'
-        let stopStr = 'FF010000000001'
-
-        port.write(str + stopStr, 'hex', err => {
-          console.log('err', err)
-          if (err) {
-            return console.log('write Error', err.message)
-          } else {
-            console.log('写入成功')
-          }
-        })
-      }, 2000)
+      // setTimeout(() => {
+      //   // 这个是变成了16进制的数据
+      //   // 需要这个时候获取到数据 也要传递到那边
+      //   // 发送的8位数字
+      //   let str = 'FF010020000021'
+      //   let stopStr = 'FF010000000001'
+      //
+      //   port.write(str + stopStr, 'hex', err => {
+      //     console.log('err', err)
+      //     if (err) {
+      //       return console.log('write Error', err.message)
+      //     } else {
+      //       console.log('写入成功')
+      //     }
+      //   })
+      // }, 2000)
     },
     closeSerialPort () {
       // 关闭为
