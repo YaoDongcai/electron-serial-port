@@ -5,19 +5,19 @@
             <el-col :span="12">
                 <div class="button-group">
                     <div class="outter-circle">
-                        <div class="inner-parts brown" @mouseup="mouseUp()" @mousedown="mouseDown('UP')" @click="handleClick('UP')">
+                        <div class="inner-parts brown"  @click="handleClick('UP')">
                             <span class="rotate">上</span>
                         </div>
-                        <div class="inner-parts silver" @mouseup="mouseUp()" @mousedown="mouseDown('RIGHT')" @click="handleClick('RIGHT')">
+                        <div class="inner-parts silver"  @click="handleClick('RIGHT')">
                             <span class="rotate">右</span>
                         </div>
-                        <div class="inner-parts blue" @mouseup="mouseUp()" @mousedown="mouseDown('LEFT')" @click="handleClick('LEFT')">
+                        <div class="inner-parts blue"  @click="handleClick('LEFT')">
                             <p class="rotate">左</p>
                         </div>
-                        <div class="inner-parts gold" @mouseup="mouseUp()" @mousedown="mouseDown('DOWN')" @click="handleClick('DOWN')">
+                        <div class="inner-parts gold"  @click="handleClick('DOWN')">
                             <p class="rotate">下</p>
                         </div>
-                        <div class="inner-circle" @mouseup="mouseUp()" @mousedown="mouseDown('MENU')" @click="handleClick('MENU')">
+                        <div class="inner-circle" @click="handleClick('MENU')">
                             <p class="ok rotate">菜单</p>
                         </div>
                     </div>
@@ -26,18 +26,18 @@
             <el-col :span="12" >
                 <el-row>
                     <el-col :span="24" style="text-align: right;">
-                        <el-button size="mini" type="success" @mouseup="mouseUp()" @mousedown="mouseDown('ZOOMPlUS')" @click="handleClick('ZOOMPlUS')">
+                        <button size="mini" type="success" @mouseup="mouseUp()" @mousedown="mouseDown('ZOOMPlUS')" @click="handleClick('ZOOMPlUS')">
                             放大+
-                        </el-button>
-                        <el-button size="mini" type="success" @mouseup="mouseUp()" @mousedown="mouseDown('ZOOMSUB')" @click="handleClick('ZOOMSUB')">
+                        </button>
+                        <button size="mini" type="success" @mouseup="mouseUp()" @mousedown="mouseDown('ZOOMSUB')" @click="handleClick('ZOOMSUB')">
                             放小-
-                        </el-button>
+                        </button>
                     </el-col>
                     <el-col :span="24" style="margin-top: 15px;text-align: right;">
-                        <el-button size="mini" type="success" @mouseup="mouseUp()" @mousedown="mouseDown('FOCUSPLUS')" @click="handleClick('FOCUSPLUS')">
+                        <el-button size="mini" type="success"  @click="handleClick('FOCUSPLUS')">
                             调焦+
                         </el-button>
-                        <el-button  size="mini" type="success" @mouseup="mouseUp()" @mousedown="mouseDown('FOCUSSUB')" @click="handleClick('FOCUSSUB')">
+                        <el-button  size="mini" type="success"  @click="handleClick('FOCUSSUB')">
                             调焦-
                         </el-button>
                     </el-col>
@@ -73,6 +73,7 @@
       return {
         timeHandle: null, // 定时器对象
         delayTime: '20', // 表示默认值20ms
+        isMouseDown: false, // 如果鼠标不是在长按 那么就不需要停止了
         // 当前发送的数据类型
         sendData: {
           'UP': 'FF010008001019', // 向上数据
@@ -100,6 +101,14 @@
         if (this.timeHandle) {
           clearInterval(this.timeHandle)
         }
+        // 发送一下停止位
+        this.isMouseDown = false
+        setTimeout(() => {
+          Bus.$emit('sendData', {
+            'sendType': 'hex', // 表示为16进制
+            'value': this.sendData.STOP // 表示为发送的值
+          })
+        }, this.delayTime)
       },
       // 长按检测
       mouseDown (type) {
@@ -107,8 +116,9 @@
           clearInterval(this.timeHandle)
         }
         this.timeHandle = setInterval(() => {
+          this.isMouseDown = true
           this.handleClick(type)
-        }, 200) // 设置为200ms 就去发送以下请求
+        }, 100) // 设置为100ms 就去发送以下请求
       },
       // 点击事件触发发送数据
       handleClick (type) {
@@ -128,12 +138,14 @@
           'sendType': 'hex', // 表示为16进制
           'value': message // 表示为发送的值
         }) // 过20ms 发送停止位
-        setTimeout(() => {
-          Bus.$emit('sendData', {
-            'sendType': 'hex', // 表示为16进制
-            'value': this.sendData.STOP // 表示为发送的值
-          })
-        }, this.delayTime)
+        if (!this.isMouseDown) {
+          setTimeout(() => {
+            Bus.$emit('sendData', {
+              'sendType': 'hex', // 表示为16进制
+              'value': this.sendData.STOP // 表示为发送的值
+            })
+          }, this.delayTime)
+        }
       }
     }
   }
