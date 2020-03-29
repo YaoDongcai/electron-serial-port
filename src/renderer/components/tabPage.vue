@@ -88,6 +88,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.el-tabs--border-card {
+    box-shadow: none;
+}
 .tab-page {
     width: 660px;
   .tab-page-row {

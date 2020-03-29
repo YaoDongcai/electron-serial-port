@@ -5,44 +5,59 @@
             <el-col :span="12">
                 <div class="button-group">
                     <div class="outter-circle">
-                        <div class="inner-parts brown" @click="handleClick('UP')">
+                        <div class="inner-parts brown" @mouseup="mouseUp()" @mousedown="mouseDown('UP')" @click="handleClick('UP')">
                             <span class="rotate">上</span>
                         </div>
-                        <div class="inner-parts silver" @click="handleClick('RIGHT')">
+                        <div class="inner-parts silver" @mouseup="mouseUp()" @mousedown="mouseDown('RIGHT')" @click="handleClick('RIGHT')">
                             <span class="rotate">右</span>
                         </div>
-                        <div class="inner-parts blue" @click="handleClick('LEFT')">
+                        <div class="inner-parts blue" @mouseup="mouseUp()" @mousedown="mouseDown('LEFT')" @click="handleClick('LEFT')">
                             <p class="rotate">左</p>
                         </div>
-                        <div class="inner-parts gold" @click="handleClick('DOWN')">
+                        <div class="inner-parts gold" @mouseup="mouseUp()" @mousedown="mouseDown('DOWN')" @click="handleClick('DOWN')">
                             <p class="rotate">下</p>
                         </div>
-                        <div class="inner-circle" @click="handleClick('MENU')">
+                        <div class="inner-circle" @mouseup="mouseUp()" @mousedown="mouseDown('MENU')" @click="handleClick('MENU')">
                             <p class="ok rotate">菜单</p>
                         </div>
                     </div>
                 </div>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="12" >
                 <el-row>
-                    <el-col :span="24">
-                        <el-button size="mini" type="success" @click="handleClick('ZOOMPlUS')">
+                    <el-col :span="24" style="text-align: right;">
+                        <el-button size="mini" type="success" @mouseup="mouseUp()" @mousedown="mouseDown('ZOOMPlUS')" @click="handleClick('ZOOMPlUS')">
                             放大+
                         </el-button>
-                        <el-button size="mini" type="success" @click="handleClick('ZOOMSUB')">
+                        <el-button size="mini" type="success" @mouseup="mouseUp()" @mousedown="mouseDown('ZOOMSUB')" @click="handleClick('ZOOMSUB')">
                             放小-
                         </el-button>
                     </el-col>
-                </el-row>
-                <el-row style="margin-top: 15px;">
-                    <el-col :span="24">
-                        <el-button size="mini" type="success" @click="handleClick('FOCUSPLUS')">
+                    <el-col :span="24" style="margin-top: 15px;text-align: right;">
+                        <el-button size="mini" type="success" @mouseup="mouseUp()" @mousedown="mouseDown('FOCUSPLUS')" @click="handleClick('FOCUSPLUS')">
                             调焦+
                         </el-button>
-                        <el-button size="mini" type="success" @click="handleClick('FOCUSSUB')">
+                        <el-button  size="mini" type="success" @mouseup="mouseUp()" @mousedown="mouseDown('FOCUSSUB')" @click="handleClick('FOCUSSUB')">
                             调焦-
                         </el-button>
                     </el-col>
+                    <el-col :span="24" style="margin-top: 15px;text-align: right;">
+                        <span>延时选择</span>
+                        <el-select v-model="delayTime">
+                            <el-option label="20毫秒" value="20">
+
+                            </el-option>
+                            <el-option label="30毫秒" value="30">
+
+                            </el-option>
+                            <el-option label="40毫秒" value="40">
+
+                            </el-option>
+                        </el-select>
+                    </el-col>
+                </el-row>
+                <el-row >
+
                 </el-row>
             </el-col>
         </el-row>
@@ -56,6 +71,8 @@
     name: 'cameraCtrl', // 摄像头控制命令
     data () {
       return {
+        timeHandle: null, // 定时器对象
+        delayTime: '20', // 表示默认值20ms
         // 当前发送的数据类型
         sendData: {
           'UP': 'FF010008001019', // 向上数据
@@ -77,8 +94,27 @@
       })
     },
     methods: {
+      // 停止长按
+      mouseUp () {
+        // 取消这个time
+        if (this.timeHandle) {
+          clearInterval(this.timeHandle)
+        }
+      },
+      // 长按检测
+      mouseDown (type) {
+        if (this.timeHandle) {
+          clearInterval(this.timeHandle)
+        }
+        this.timeHandle = setInterval(() => {
+          this.handleClick(type)
+        }, 200) // 设置为200ms 就去发送以下请求
+      },
       // 点击事件触发发送数据
       handleClick (type) {
+        // if (this.timeHandle) {
+        //   clearInterval(this.timeHandle)
+        // }
         // 先检测串口是否打开 如果没有打开 那么提醒用户去打开串口
         if (!this.isOpenSerialPort) {
           // 提醒用户
@@ -97,7 +133,7 @@
             'sendType': 'hex', // 表示为16进制
             'value': this.sendData.STOP // 表示为发送的值
           })
-        }, 20)
+        }, this.delayTime)
       }
     }
   }

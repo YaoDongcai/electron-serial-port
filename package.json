@@ -1,5 +1,5 @@
 {
-  "name": "electron-linux-serialport-app",
+  "name": "electron-serialport-app",
   "version": "0.0.1",
   "author": "dcyao",
   "description": "An electron-vue project",
@@ -19,7 +19,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
-    "productName": "electron-linux-serialport-app",
+    "productName": "electron-serialport-app",
     "appId": "org.dcyao.serialport",
     "directories": {
       "output": "build"

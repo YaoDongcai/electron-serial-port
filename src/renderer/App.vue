@@ -6,7 +6,7 @@
 
 <script>
   export default {
-    name: 'electron-linux-serialport-app'
+    name: 'electron-serialport-app'
   }
 </script>
 

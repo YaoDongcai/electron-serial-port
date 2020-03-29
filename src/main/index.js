@@ -20,9 +20,9 @@ function createWindow () {
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    height: 563,
+    height: 430,
     useContentSize: true,
-    width: 1000
+    width: 600
   })
   // 关闭toolMenu 菜单栏
   Menu.setApplicationMenu(null)
@@ -40,7 +40,10 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
-
+// 登录窗口
+app.on('login-window', () => {
+  mainWindow.setSize(563, 400)
+})
 app.on('activate', () => {
   if (mainWindow === null) {
     createWindow()
