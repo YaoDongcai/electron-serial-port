@@ -26,12 +26,12 @@
             <el-col :span="12" >
                 <el-row>
                     <el-col :span="24" style="text-align: right;">
-                        <button size="mini" type="success" @mouseup="mouseUp()" @mousedown="mouseDown('ZOOMPlUS')" @click="handleClick('ZOOMPlUS')">
+                        <el-button size="mini" type="success" @mouseup.native="mouseUp()" @mousedown.native="mouseDown('ZOOMPlUS')" @click="handleClick('ZOOMPlUS')">
                             放大+
-                        </button>
-                        <button size="mini" type="success" @mouseup="mouseUp()" @mousedown="mouseDown('ZOOMSUB')" @click="handleClick('ZOOMSUB')">
+                        </el-button>
+                        <el-button size="mini" type="success" @mouseup.native="mouseUp()" @mousedown.native="mouseDown('ZOOMSUB')" @click="handleClick('ZOOMSUB')">
                             放小-
-                        </button>
+                        </el-button>
                     </el-col>
                     <el-col :span="24" style="margin-top: 15px;text-align: right;">
                         <el-button size="mini" type="success"  @click="handleClick('FOCUSPLUS')">

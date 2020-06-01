@@ -38,6 +38,9 @@
           <el-tab-pane label="日志设置">
             <serial-log></serial-log>
           </el-tab-pane>
+          <el-tab-pane label="树莓派设备控制">
+              <raspberry-page></raspberry-page>
+          </el-tab-pane>
         </el-tabs>
       </el-col>
     </el-row>
@@ -49,6 +52,7 @@ import SendView from './sendView'
 import SerialConfig from './serialConfig'
 import SerialLog from './serialLog'
 import CameraCtrl from './cameraCtrl'
+import RaspberryPage from './raspberryPage'
 import { mapState, mapMutations } from 'vuex'
 export default {
   name: 'tabPage',
@@ -56,7 +60,8 @@ export default {
     SendView,
     SerialConfig,
     SerialLog,
-    CameraCtrl
+    CameraCtrl,
+    RaspberryPage
   },
   computed: {
     ...mapState({
