@@ -3,6 +3,9 @@
     <el-row class="tab-page-row">
       <el-col :span="24">
         <el-tabs type="border-card">
+            <el-tab-pane label="树莓派设备控制">
+                <raspberry-page></raspberry-page>
+            </el-tab-pane>
           <el-tab-pane>
             <span slot="label">
               <i class="el-icon-date"></i>
@@ -37,9 +40,6 @@
           </el-tab-pane>
           <el-tab-pane label="日志设置">
             <serial-log></serial-log>
-          </el-tab-pane>
-          <el-tab-pane label="树莓派设备控制">
-              <raspberry-page></raspberry-page>
           </el-tab-pane>
         </el-tabs>
       </el-col>
