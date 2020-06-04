@@ -63,6 +63,15 @@ function startRenderer () {
       compiler,
       {
         contentBase: path.join(__dirname, '../'),
+        proxy: {
+          '/respberry': {
+            target: 'http://localhost:7001/respberry',
+            changeOrigin: true,
+            pathRewrite: {
+              '^/respberry': '/respberry'
+            }
+          }
+        },
         quiet: true,
         before (app, ctx) {
           app.use(hotMiddleware)
@@ -127,7 +136,7 @@ function startElectron () {
   }
 
   electronProcess = spawn(electron, args)
-  
+
   electronProcess.stdout.on('data', data => {
     electronLog(data, 'blue')
   })

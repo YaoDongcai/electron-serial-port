@@ -4,19 +4,19 @@
             <el-col :span="8">
                 <p class="raspberry-title">相机工作模式设置</p>
                 <el-select class="raspberry-select" v-model="camera.workType" >
-                    <el-option v-for="item in workTypeList"  :value="item.value"> {{ item.label }}</el-option>
+                    <el-option :key="index" v-for="(item, index) in workTypeList" :label="item.label" :value="item.value"></el-option>
                 </el-select>
             </el-col>
             <el-col :span="8">
                 <p class="raspberry-title">相机曝光补偿量设置</p>
                 <el-select class="raspberry-select" v-model="camera.exposure" >
-                    <el-option v-for="item in exposureList"  :value="item.value"> {{ item.label }}</el-option>
+                    <el-option :key="index" v-for="(item, index) in exposureList"  :value="item.value"> {{ item.label }}</el-option>
                 </el-select>
             </el-col>
             <el-col :span="8">
                 <p class="raspberry-title">串口通信波特率设置</p>
                 <el-select class="raspberry-select" v-model="camera.baudRate" >
-                    <el-option v-for="item in baudRateList"  :value="item.value"> {{ item.label }}</el-option>
+                    <el-option :key="index" v-for="(item, index) in baudRateList" :label="item.label"  :value="item.value"></el-option>
                 </el-select>
             </el-col>
         </el-row>
@@ -24,11 +24,11 @@
             <el-col :span="8">
                 <p class="raspberry-title">外接闪光灯选择</p>
                 <el-select class="raspberry-select" v-model="camera.flashCode" >
-                    <el-option v-for="item in flashCodeList"  :value="item.value"> {{ item.label }}</el-option>
+                    <el-option :key="index" v-for="(item, index) in flashCodeList" :label="item.label"  :value="item.value"> </el-option>
                 </el-select>
                 <p class="raspberry-title">定时拍照</p>
                 <el-select class="raspberry-select" v-model="camera.defineTime" >
-                    <el-option v-for="item in defineTimeList"  :value="item.value"> {{ item.label }}</el-option>
+                    <el-option :key="index" v-for="(item, index) in defineTimeList" :label="item.label"  :value="item.value"></el-option>
                 </el-select>
             </el-col>
             <el-col :span="4" >
@@ -76,13 +76,13 @@
     name: 'raspberryPage', // 树莓派控制系统
     data () {
       return {
-        url: 'http://192.168.43.131:7001',
+        url: 'http://localhost:7001/respberry', // 192.168.43.131
         camera: {
           workType: '0x0a',
           exposure: '', // 曝光补偿设置
-          baudRate: '9600', // 波特率设置
-          flashCode: '', // 闪光灯选择码
-          defineTime: '' // 定时拍照
+          baudRate: '0x04', // 波特率设置
+          flashCode: '0x01', // 闪光灯选择码
+          defineTime: '0x01' // 定时拍照
         },
         defineTimeList: [
           {label: '3~255秒', value: '0x01'},
@@ -132,42 +132,42 @@
         exposureList: [
           {
             label: 'Av',
-            value: '0X02'
+            value: '0x02'
           }
         ],
         workTypeList: [{
           label: 'AUTO(自动)',
-          value: '0X01'
+          value: '0x01'
         }, {
           label: 'Av',
-          value: '0X02'
+          value: '0x02'
         }, {
           label: 'HDR(高反差景象)',
-          value: '0X03'
+          value: '0x03'
         }, {
           label: '人像',
-          value: '0X04'
+          value: '0x04'
         }, {
           label: 'C1',
-          value: '0X05'
+          value: '0x05'
         }, {
           label: 'M(手动)',
-          value: '0X06'
+          value: '0x06'
         }, {
           label: 'Tv(快门优先)',
-          value: '0X07'
+          value: '0x07'
         }, {
           label: '摄像',
-          value: '0X08'
+          value: '0x08'
         }, {
           label: 'C2',
-          value: '0X09'
+          value: '0x09'
         }, {
           label: 'P(程序控制)',
-          value: '0X0a'
+          value: '0x0a'
         }, {
           label: '混合(摄像和拍照)',
-          value: '0X0b'
+          value: '0x0b'
         }]
       }
     },
@@ -178,7 +178,7 @@
         })
       },
       // 测试是否已经连接树莓派了 或者树莓派是否开始启动成功了
-      init () {
+      async init () {
         const loading = this.$loading({
           lock: true,
           text: 'Loading',
@@ -190,7 +190,7 @@
           // 获取了所有的数据
           loading.close();
           this.$message.success('连接成功，初始化接口数据')
-          const list = res.list.filter(item => {
+          const list = res.data.list.filter(item => {
             return !!item.hasOwnProperty('vendorId')
           })
           // 当前的接口就是为list[0].path
@@ -204,9 +204,8 @@
               this.$message.success('USB端口打开成功，开始读写数据')
             })
         // 开始初始化usb的接口 开始提交数据
-        }, error => {
-          // 表示连接失败了
-          loading.close()
+        }).catch(error => {
+          console.log('error', error)
         })
       },
       handleClick (type) {

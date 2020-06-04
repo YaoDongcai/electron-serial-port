@@ -22,7 +22,10 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     height: 430,
     useContentSize: true,
-    width: 600
+    width: 600,
+    webPreferences: {
+      webSecurity: false // 降低安全性 是为了dev 开发
+    }
   })
   // 关闭toolMenu 菜单栏
   Menu.setApplicationMenu(null)
