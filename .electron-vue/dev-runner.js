@@ -65,7 +65,7 @@ function startRenderer () {
         contentBase: path.join(__dirname, '../'),
         proxy: {
           '/respberry': {
-            target: 'http://localhost:7001/respberry',
+            target: 'http://192.168.43.131:7001/respberry',
             changeOrigin: true,
             pathRewrite: {
               '^/respberry': '/respberry'
