@@ -40,12 +40,12 @@
                 <p class="raspberry-btn"><el-button @click="handleClick('off')" size="mini" type="danger">
                     关机</el-button></p>
                 <p class="raspberry-btn">
-                    <el-button size="mini" type="primary" @click="handleClick('focusAdd')">
+                    <el-button size="mini" type="primary" @mouseup.native="mouseUp()" @mousedown.native="mouseDown('focusAdd')" @click="handleClick('focusAdd')">
                         变焦+
                     </el-button>
                 </p>
                 <p class="raspberry-btn">
-                    <el-button size="mini" type="primary" @click="handleClick('focusSub')">
+                    <el-button size="mini" type="primary" @mouseup.native="mouseUp()" @mousedown.native="mouseDown('focusSub')" @click="handleClick('focusSub')">
                         变焦-
                     </el-button>
                 </p>
@@ -56,13 +56,13 @@
                         <div class="inner-parts brown"  @click="handleClick('menuUp')">
                             <span class="rotate">上</span>
                         </div>
-                        <div class="inner-parts primary"  @click="handleClick('RIGHT')">
+                        <div class="inner-parts primary"  @click="handleClick('menuRight')">
                             <span class="rotate">右</span>
                         </div>
-                        <div class="inner-parts primary"  @click="handleClick('LEFT')">
+                        <div class="inner-parts primary"  @click="handleClick('menuLeft')">
                             <p class="rotate">左</p>
                         </div>
-                        <div class="inner-parts gold"  @click="handleClick('DOWN')">
+                        <div class="inner-parts gold"  @click="handleClick('menuDown')">
                             <p class="rotate">下</p>
                         </div>
                         <div class="inner-circle" @click="handleClick('menuOn')">
@@ -70,6 +70,9 @@
                         </div>
                     </div>
                 </div>
+                <el-button size="mini" type="primary" @click="handleClick('menuOk')">
+                    确定
+                </el-button>
             </el-col>
             <el-col :span="4">
                 <p class="raspberry-btn"><el-button @click="handleClick('photo')" size="mini" type="primary">
@@ -105,27 +108,28 @@
     name: 'raspberryPage', // 树莓派控制系统
     data () {
       return {
+        timeHandle: null, // 设置定时的句柄
         url: 'http://192.168.43.131:7001/respberry', // 192.168.43.131
         commandCodeObj: {
-          on: 'AA7511020000CC', // 开机命令
-          off: 'AA7522020000FF', // 关机命令
-          photo: 'AA7533020000EE', // 手动拍照
-          menuOn: 'AA7577020000AA', // 菜单打开
-          menuOff: 'AA758802000055', // 菜单关闭
-          menuUp: 'AA759902000044', // 菜单上翻
-          menuDown: 'AA75AA02000077', // 菜单下翻
-          menuLeft: 'AA75BB02000066', // 菜单左翻
-          menuRight: 'AA75CC02000011', // 菜单右翻
-          menuOk: 'AA75DD02000000', // 菜单确定
-          focusSub: 'AA753E020000E3', // 变焦-
-          focusAdd: 'AA754E02000093', // 变焦+
-          downloadStart: 'AA751E020100C2', // 数据下载开始
-          downloadEnd: 'AA751E020000C3', // 数据下载结束
-          audioStart: 'AA755E02010082', // 录像开始
-          audioEnd: 'AA755E02000083' // 录像结束
+          on: 'on', // 开机命令
+          off: 'off', // 关机命令
+          photo: 'photo', // 手动拍照
+          menuOn: 'menuOn', // 菜单打开
+          menuOff: 'menuOff', // 菜单关闭
+          menuUp: 'menuUp', // 菜单上翻
+          menuDown: 'menuDown', // 菜单下翻
+          menuLeft: 'menuLeft', // 菜单左翻
+          menuRight: 'menuRight', // 菜单右翻
+          menuOk: 'menuOk', // 菜单确定
+          focusSub: 'focusSub', // 变焦-
+          focusAdd: 'focusAdd', // 变焦+
+          downloadStart: 'downloadStart', // 数据下载开始
+          downloadEnd: 'downloadEnd', // 数据下载结束
+          audioStart: 'audioStart', // 录像开始
+          audioEnd: 'audioEnd' // 录像结束
         },
         camera: {
-          workType: 'AA755502010089',
+          workType: 'autoModel',
           exposure: '', // 曝光补偿设置
           baudRate: '0x04', // 波特率设置
           flashCode: '0x01', // 闪光灯选择码
@@ -184,41 +188,54 @@
         ],
         workTypeList: [{
           label: 'AUTO(自动)',
-          value: 'AA755502010089'
+          value: 'autoModel'
         }, {
           label: 'Av',
-          value: 'AA75550202008A'
+          value: 'avModel'
         }, {
           label: 'HDR(高反差景象)',
-          value: 'AA75550203008B'
+          value: 'hdrModel'
         }, {
           label: '人像',
-          value: 'AA75550204008C'
+          value: 'personImageModel'
         }, {
           label: 'C1',
-          value: 'AA75550205008D'
+          value: 'c1Model'
         }, {
           label: 'M(手动)',
-          value: 'AA75550206008E'
+          value: 'mModel'
         }, {
           label: 'Tv(快门优先)',
-          value: 'AA75550207008F'
+          value: 'tvModel'
         }, {
           label: '摄像',
-          value: 'AA755502080080'
+          value: 'audioModel'
         }, {
           label: 'C2',
-          value: 'AA755502090081'
+          value: 'c2Model'
         }, {
           label: 'P(程序控制)',
-          value: 'AA7555020a0082'
+          value: 'pModel'
         }, {
           label: '混合(摄像和拍照)',
-          value: 'AA7555020b0083'
+          value: 'mixinModel'
         }]
       }
     },
     methods: {
+      mouseDown (type) {
+        if (this.timeHandle) {
+          clearInterval(this.timeHandle)
+        }
+        this.timeHandle = setInterval(() => {
+          this.handleClick(type)
+        }, 100) // 设置为100ms 就去发送以下请求
+      },
+      mouseUp () {
+        if (this.timeHandle) {
+          clearInterval(this.timeHandle)
+        }
+      },
       // 工作模式选择
       workTypeChange (value) {
         // 这个时候需要去发送数据
