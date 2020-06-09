@@ -27,9 +27,14 @@
                     <el-option :key="index" v-for="(item, index) in flashCodeList" :label="item.label"  :value="item.value"> </el-option>
                 </el-select>
                 <p class="raspberry-title">定时拍照</p>
-                <el-select class="raspberry-select" v-model="camera.defineTime" >
-                    <el-option :key="index" v-for="(item, index) in defineTimeList" :label="item.label"  :value="item.value"></el-option>
-                </el-select>
+                <div style="display: flex;">
+                    <span><el-input v-model.number="camera.defineTime" placeholder="请输入"/></span>
+                    <span>
+                        <el-select class="raspberry-select"  v-model="camera.unit">
+                        <el-option :key="index" v-for="(item, index) in defineTimeList" :label="item.label"  :value="item.value"></el-option>
+                    </el-select>
+                    </span>
+                </div>
             </el-col>
             <el-col :span="4" >
                 <p class="raspberry-btn">
@@ -129,16 +134,17 @@
           audioEnd: 'audioEnd' // 录像结束
         },
         camera: {
+          unit: 's',
           workType: 'autoModel',
           exposure: '', // 曝光补偿设置
           baudRate: '0x04', // 波特率设置
           flashCode: '0x01', // 闪光灯选择码
-          defineTime: '0x01' // 定时拍照
+          defineTime: 10 // 定时拍照 只能是数字
         },
         defineTimeList: [
-          {label: '3~255秒', value: '0x01'},
-          {label: '1~255分', value: '0x02'},
-          {label: '1~255时', value: '0x03'}
+          {label: '秒', value: 's'},
+          {label: '分', value: 'm'},
+          {label: '时', value: 'h'}
         ],
         flashCodeList: [
           {label: '外部热靴闪光灯1', value: '0x01'},
@@ -260,7 +266,7 @@
             this.$message.success('发送成功')
             if (type === 'downloadStart') {
               setTimeout(() => {
-                child.exec('explorer.exe "ftp://192.168.43.131"', function(err, sto) {
+                child.exec('explorer.exe "ftp://192.168.43.131"', function (err, sto) {
                   console.log('err', err, sto)
                 })
               }, 1000) // 需要延时一秒来打开
