@@ -7,18 +7,18 @@
                     <el-option :key="index" v-for="(item, index) in workTypeList" :label="item.label" :value="item.value"></el-option>
                 </el-select>
             </el-col>
-            <el-col :span="8">
-                <p class="raspberry-title">相机曝光补偿量设置</p>
-                <el-select class="raspberry-select" v-model="camera.exposure" >
-                    <el-option :key="index" v-for="(item, index) in exposureList"  :value="item.value"> {{ item.label }}</el-option>
-                </el-select>
-            </el-col>
-            <el-col :span="8">
-                <p class="raspberry-title">串口通信波特率设置</p>
-                <el-select class="raspberry-select" v-model="camera.baudRate" >
-                    <el-option :key="index" v-for="(item, index) in baudRateList" :label="item.label"  :value="item.value"></el-option>
-                </el-select>
-            </el-col>
+            <!--<el-col :span="8">-->
+                <!--<p class="raspberry-title">相机曝光补偿量设置</p>-->
+                <!--<el-select class="raspberry-select" v-model="camera.exposure" >-->
+                    <!--<el-option :key="index" v-for="(item, index) in exposureList"  :value="item.value"> {{ item.label }}</el-option>-->
+                <!--</el-select>-->
+            <!--</el-col>-->
+            <!--<el-col :span="8">-->
+                <!--<p class="raspberry-title">串口通信波特率设置</p>-->
+                <!--<el-select class="raspberry-select" v-model="camera.baudRate" >-->
+                    <!--<el-option :key="index" v-for="(item, index) in baudRateList" :label="item.label"  :value="item.value"></el-option>-->
+                <!--</el-select>-->
+            <!--</el-col>-->
         </el-row>
         <el-row :gutter="15">
             <el-col :span="8">
