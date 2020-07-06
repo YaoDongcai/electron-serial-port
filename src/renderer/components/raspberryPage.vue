@@ -300,8 +300,9 @@
               this.$message.success('USB端口打开成功，开始读写数据')
             })
         // 开始初始化usb的接口 开始提交数据
-        }).catch(error => {
-          console.log('error', error)
+        }).catch(() => {
+          loading.close()
+          this.$message.success('连接失败，请检查设备服务是否启动')
         })
       }
     }
