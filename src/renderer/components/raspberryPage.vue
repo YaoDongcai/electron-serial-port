@@ -26,7 +26,9 @@
                 <el-select class="raspberry-select" v-model="camera.flashCode" >
                     <el-option :key="index" v-for="(item, index) in flashCodeList" :label="item.label"  :value="item.value"> </el-option>
                 </el-select>
-                <p class="raspberry-title">定时拍照</p>
+                <p class="raspberry-title">定时拍照 <el-checkbox v-model="isSetTime" @change="setTimeHandle()">
+                    是否勾选
+                </el-checkbox></p>
                 <div style="display: flex;">
                     <span><el-input v-model.number="camera.defineTime" placeholder="请输入"/></span>
                     <span>
@@ -75,11 +77,19 @@
                         </div>
                     </div>
                 </div>
-                <el-button size="mini" type="primary" @click="handleClick('menuOk')">
-                    确定
-                </el-button>
+
             </el-col>
             <el-col :span="4">
+                <p class="raspberry-btn">
+                    <el-button size="mini" type="primary" @click="showSetIP()">
+                        设置IP
+                    </el-button>
+                </p>
+                <p class="raspberry-btn">
+                    <el-button size="mini" type="primary" @click="handleClick('menuOk')">
+                        确定
+                    </el-button>
+                </p>
                 <p class="raspberry-btn"><el-button @click="handleClick('photo')" size="mini" type="primary">
                     手动拍照</el-button></p>
                 <p class="raspberry-btn">
@@ -104,6 +114,19 @@
                 </p>
             </el-col>
         </el-row>
+        <el-dialog title="IP设置" :visible.sync="dialogVisible">
+            <div class="ip-ul" :key="index" v-for="(IpItem, index) in lists">
+                <label class="ip-ul-label">{{ IpItem.label }}</label>
+                <div class="ip-ul-li" :key="index2" v-for="(item, index2) in IpItem.list">
+                    <el-input size="mini" @input="inputKeyUp" v-model="item.ip" />
+                    <span v-if="index2 != (IpItem.list.length-1)">.</span>
+                </div>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="handleClickBySubmit">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -113,8 +136,46 @@
     name: 'raspberryPage', // 树莓派控制系统
     data () {
       return {
+        timePhotoHandle: null, // 定时拍照句柄
+        isSetTime: false, // 是否勾选为定时拍照
+        lists: [{
+          label: 'IP地址',
+          list: [{
+            ip: ''
+          }, {
+            ip: ''
+          }, {
+            ip: ''
+          }, {
+            ip: ''
+          }]
+        }, {
+          label: 'DNS地址',
+          list: [{
+            ip: ''
+          }, {
+            ip: ''
+          }, {
+            ip: ''
+          }, {
+            ip: ''
+          }]
+        }, {
+          label: '子网掩码',
+          list: [{
+            ip: ''
+          }, {
+            ip: ''
+          }, {
+            ip: ''
+          }, {
+            ip: ''
+          }]
+        }],
+        name: '',
+        dialogVisible: false,
         timeHandle: null, // 设置定时的句柄
-        url: 'http://192.168.43.131:7001/respberry', // 192.168.43.131
+        url: 'http://192.168.0.10:7001/respberry', // 192.168.0.10
         commandCodeObj: {
           on: 'on', // 开机命令
           off: 'off', // 关机命令
@@ -229,6 +290,74 @@
       }
     },
     methods: {
+      setTimeHandle (value) {
+        if (!this.isSetTime) {
+          console.log('no photo')
+          // 如果是勾选了 那么就要干掉定时器
+          this.timePhotoHandle && clearInterval(this.timePhotoHandle)
+        } else {
+          let time = null
+          switch (this.camera.unit) {
+            case 's':
+              time = parseInt(this.camera.defineTime * 1000)
+              break
+            case 'm':
+              time = parseInt(this.camera.defineTime * 1000 * 60)
+              break
+            case 'h':
+              time = parseInt(this.camera.defineTime * 1000 * 60 * 60)
+              break
+          }
+          this.timePhotoHandle = setInterval(() => {
+            console.log('photo')
+            this.handleClick('photo')
+          }, time)
+        }
+      },
+      inputKeyUp (value) {
+        value = value.replace(/[^\d]/g, '')
+        console.log(typeof (value), value)
+        if (Number.isInteger(value)) {
+          // 如果是一个数字 那么就需要判断当前的值需要为0~255之间的值
+          console.log(Number.isInteger(value), value)
+          if (value < 0) {
+            this.$message.error('当前的值小于0,请重新输入')
+          }
+          if (value > 255) {
+            this.$message.error('当前的值大于255,请重新输入')
+          }
+        }
+      },
+      handleClickBySubmit () {
+        this.dialogVisible = false
+      },
+      // 设置IP 地址
+      showSetIP () {
+        // 此时先要获取树莓派的ip地址
+        this.dialogVisible = true
+        this.$http
+          .get(this.url + '/getIP').then(res => {
+            // 成功后的回调数据
+            console.log('res', res)
+            if (res.status === 200) {
+            // 表示调用成功
+              const obj = res.data.list
+              const addressList = (obj.address + '').split('.')
+              addressList.map((item, index) => {
+                console.log('this.lists[0][index]',this.lists[0].list)
+                this.lists[0].list[index].ip = item
+              })
+              const netmaskList = (obj.netmask + '').split('.')
+              netmaskList.map((item, index) => {
+                this.lists[2].list[index].ip = item
+              })
+            // cidr:"192.168.0.10/24"
+            // netmask:"255.255.255.0"
+            }
+          }, () => {
+            // 调用失败后的
+          })
+      },
       mouseDown (type) {
         if (this.timeHandle) {
           clearInterval(this.timeHandle)
@@ -310,6 +439,23 @@
 </script>
 
 <style lang="scss" scoped>
+    .ip-ul {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 15px;
+        &-label {
+            width: 80px;
+            margin-right: 15px;
+            text-align: right;
+            line-height: 28px;
+        }
+        &-li {
+            width: 120px;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-end;
+        }
+    }
     .button-group {
         padding-top: 20px;
         width: 150px;
