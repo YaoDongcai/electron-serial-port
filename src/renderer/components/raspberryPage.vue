@@ -395,7 +395,7 @@
             this.$message.success('发送成功')
             if (type === 'downloadStart') {
               setTimeout(() => {
-                child.exec('explorer.exe "ftp://192.168.43.131"', function (err, sto) {
+                child.exec('explorer.exe "ftp://192.168.0.10"', function (err, sto) {
                   console.log('err', err, sto)
                 })
               }, 1000) // 需要延时一秒来打开
@@ -416,7 +416,7 @@
           loading.close()
           this.$message.success('连接成功，初始化接口数据')
           const list = res.data.list.filter(item => {
-            return !!item.hasOwnProperty('vendorId')
+            return !!item.hasOwnProperty('path')
           })
           // 当前的接口就是为list[0].path
           const portName = list[0].path
