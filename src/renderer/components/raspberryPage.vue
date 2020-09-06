@@ -292,9 +292,14 @@
     methods: {
       setTimeHandle (value) {
         if (!this.isSetTime) {
-          console.log('no photo')
-          // 如果是勾选了 那么就要干掉定时器
-          this.timePhotoHandle && clearInterval(this.timePhotoHandle)
+          // 如果是勾选了 取消定时器
+          this.$http
+            .post(this.url + '/writePortIsIntertime', {
+              send: 'noPhoto'
+            })
+            .then((res) => {
+              this.$message.success('取消成功')
+            })
         } else {
           let time = null
           switch (this.camera.unit) {
@@ -308,10 +313,15 @@
               time = parseInt(this.camera.defineTime * 1000 * 60 * 60)
               break
           }
-          this.timePhotoHandle = setInterval(() => {
-            console.log('photo')
-            this.handleClick('photo')
-          }, time)
+          // 发送对应的指令
+          this.$http
+            .post(this.url + '/writePortIsIntertime', {
+              send: 'photo',
+              timeOut: time
+            })
+            .then((res) => {
+              this.$message.success('定时操作指令写入成功')
+            })
         }
       },
       inputKeyUp (value) {
