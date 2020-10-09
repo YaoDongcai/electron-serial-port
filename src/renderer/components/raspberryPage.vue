@@ -402,14 +402,24 @@
             send: message
           })
           .then((res) => {
-            this.$message.success('发送成功')
+            console.log('res', res)
             if (type === 'downloadStart') {
               setTimeout(() => {
-                child.exec('explorer.exe "ftp://192.168.0.10"', function (err, sto) {
+                child.exec('explorer.exe "ftp://pi:raspberry@192.168.0.10"', function (err, sto) {
                   console.log('err', err, sto)
                 })
               }, 1000) // 需要延时一秒来打开
+              // 这个时候需要判断这个res 的内容
+              if (res.status === 2) {
+                // 表示这个其实是一个错误的信息
+                this.$message.error(res.message + '')
+              } else {
+                this.$message.success('发送成功')
+              }
+              return
             }
+
+            this.$message.success('发送成功')
           })
       },
       // 测试是否已经连接树莓派了 或者树莓派是否开始启动成功了

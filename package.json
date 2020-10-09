@@ -1,6 +1,6 @@
 {
   "name": "electron-serialport-app",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "author": "dcyao",
   "description": "An electron-vue project",
   "license": "ISC",

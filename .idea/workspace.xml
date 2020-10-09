@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e09b821a-20a6-4654-a50b-4c2c217587fe" name="Default Changelist" comment="【修复代码】【dcyao】增加了定时任务 增加了定时要求等设计">
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+    <list default="true" id="e09b821a-20a6-4654-a50b-4c2c217587fe" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/renderer/components/raspberryPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/renderer/components/raspberryPage.vue" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/dist/" />
@@ -21,8 +21,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/renderer/components/raspberryPage.vue">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="233">
-              <caret line="301" column="14" lean-forward="true" selection-start-line="301" selection-start-column="14" selection-end-line="301" selection-end-column="14" />
+            <state relative-caret-position="136">
+              <caret line="419" column="13" lean-forward="true" selection-start-line="419" selection-start-column="13" selection-end-line="419" selection-end-column="13" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#el-col#0;n#el-row#1;n#div#0;n#template#0;n#!!top" expanded="true" />
                 <element signature="n#p#0;n#el-col#1;n#el-row#1;n#div#0;n#template#0;n#!!top" />
@@ -39,8 +39,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/package.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="875">
-              <caret line="117" selection-start-line="117" selection-end-line="117" />
+            <state relative-caret-position="150">
+              <caret line="6" column="36" lean-forward="true" selection-start-line="6" selection-start-column="36" selection-end-line="6" selection-end-column="36" />
               <folding>
                 <element signature="n#!!block;n#build#0;n#!!top" />
                 <element signature="n#!!block;n#devDependencies#0;n#!!top" />
@@ -138,6 +138,7 @@
       <find>timeHandle</find>
       <find>手动拍照</find>
       <find>commandCodeObj</find>
+      <find>downloadStart</find>
     </findStrings>
     <replaceStrings>
       <replace>ox</replace>
@@ -160,11 +161,11 @@
         <option value="$PROJECT_DIR$/src/index.ejs" />
         <option value="$PROJECT_DIR$/src/renderer/App.vue" />
         <option value="$PROJECT_DIR$/src/renderer/components/LandingPage.vue" />
-        <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/src/renderer/components/cameraCtrl.vue" />
         <option value="$PROJECT_DIR$/src/renderer/components/tabPage.vue" />
         <option value="$PROJECT_DIR$/src/main/index.js" />
         <option value="$PROJECT_DIR$/.electron-vue/dev-runner.js" />
+        <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/src/renderer/components/raspberryPage.vue" />
       </list>
     </option>
@@ -180,7 +181,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -188,21 +188,11 @@
               <item name="electron-serial-port" type="b2602c69:ProjectViewProjectNode" />
               <item name="electron-serial-port" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="electron-serial-port" type="b2602c69:ProjectViewProjectNode" />
-              <item name="electron-serial-port" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="electron-serial-port" type="b2602c69:ProjectViewProjectNode" />
-              <item name="electron-serial-port" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="renderer" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -302,7 +292,10 @@
       <workItem from="1598326471545" duration="639000" />
       <workItem from="1598771820527" duration="3179000" />
       <workItem from="1598835112683" duration="37000" />
-      <workItem from="1599372673565" duration="1283000" />
+      <workItem from="1599372673565" duration="1322000" />
+      <workItem from="1599439169030" duration="36000" />
+      <workItem from="1599555404165" duration="7000" />
+      <workItem from="1602038203298" duration="7887000" />
     </task>
     <task id="LOCAL-00001" summary="【修复代码】【dcyao】 修复了可以长按发送 修复了部分样式">
       <created>1585454603666</created>
@@ -388,11 +381,18 @@
       <option name="project" value="LOCAL" />
       <updated>1597644299333</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="【修复代码】【dcyao】增加了定时任务 增加了定时要求等设计">
+      <created>1599376635855</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1599376635855</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="87781000" />
+    <option name="totallyTimeSpent" value="95750000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -406,20 +406,20 @@
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1295" height="735" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.23749007" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.23749007" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="npm" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4988086" visible="true" weight="0.3283582" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4980143" weight="0.39137647" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.3283582" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.4980143" weight="0.2305141" />
-      <window_info active="true" anchor="bottom" id="Event Log" order="9" sideWeight="0.50119144" side_tool="true" visible="true" weight="0.3283582" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5019857" side_tool="true" visible="true" weight="0.39137647" />
       <window_info anchor="bottom" id="Terminal" order="10" weight="0.33278146" />
       <window_info anchor="bottom" id="TypeScript" order="11" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -576,33 +576,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/renderer/components/raspberryPage.vue">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="233">
-          <caret line="301" column="14" lean-forward="true" selection-start-line="301" selection-start-column="14" selection-end-line="301" selection-end-column="14" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#el-col#0;n#el-row#1;n#div#0;n#template#0;n#!!top" expanded="true" />
-            <element signature="n#p#0;n#el-col#1;n#el-row#1;n#div#0;n#template#0;n#!!top" />
-            <element signature="n#el-button#0;n#p#1;n#el-col#1;n#el-row#1;n#div#0;n#template#0;n#!!top" />
-            <element signature="n#el-button#0;n#p#2;n#el-col#1;n#el-row#1;n#div#0;n#template#0;n#!!top" />
-            <element signature="n#p#3;n#el-col#1;n#el-row#1;n#div#0;n#template#0;n#!!top" />
-            <element signature="n#p#4;n#el-col#1;n#el-row#1;n#div#0;n#template#0;n#!!top" />
-            <element signature="n#div#0;n#div#0;n#el-col#2;n#el-row#1;n#div#0;n#template#0;n#!!top" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="875">
-          <caret line="117" selection-start-line="117" selection-end-line="117" />
-          <folding>
-            <element signature="n#!!block;n#build#0;n#!!top" />
-            <element signature="n#!!block;n#devDependencies#0;n#!!top" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/renderer/App.vue">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="125">
@@ -644,6 +617,33 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/index.dev.js">
       <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="6" column="36" lean-forward="true" selection-start-line="6" selection-start-column="36" selection-end-line="6" selection-end-column="36" />
+          <folding>
+            <element signature="n#!!block;n#build#0;n#!!top" />
+            <element signature="n#!!block;n#devDependencies#0;n#!!top" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/renderer/components/raspberryPage.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="419" column="13" lean-forward="true" selection-start-line="419" selection-start-column="13" selection-end-line="419" selection-end-column="13" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#el-col#0;n#el-row#1;n#div#0;n#template#0;n#!!top" expanded="true" />
+            <element signature="n#p#0;n#el-col#1;n#el-row#1;n#div#0;n#template#0;n#!!top" />
+            <element signature="n#el-button#0;n#p#1;n#el-col#1;n#el-row#1;n#div#0;n#template#0;n#!!top" />
+            <element signature="n#el-button#0;n#p#2;n#el-col#1;n#el-row#1;n#div#0;n#template#0;n#!!top" />
+            <element signature="n#p#3;n#el-col#1;n#el-row#1;n#div#0;n#template#0;n#!!top" />
+            <element signature="n#p#4;n#el-col#1;n#el-row#1;n#div#0;n#template#0;n#!!top" />
+            <element signature="n#div#0;n#div#0;n#el-col#2;n#el-row#1;n#div#0;n#template#0;n#!!top" />
+          </folding>
+        </state>
+      </provider>
     </entry>
   </component>
 </project>
