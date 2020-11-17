@@ -175,7 +175,7 @@
         name: '',
         dialogVisible: false,
         timeHandle: null, // 设置定时的句柄
-        url: 'http://192.168.0.10:7001/respberry', // 192.168.0.10
+        url: 'http://192.168.0.10:7001/respberry', // 192.168.0.10 192.168.43.131
         commandCodeObj: {
           on: 'on', // 开机命令
           off: 'off', // 关机命令

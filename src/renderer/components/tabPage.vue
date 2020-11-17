@@ -38,8 +38,11 @@
           <el-tab-pane label="索尼摄像头控制">
               <camera-ctrl></camera-ctrl>
           </el-tab-pane>
-          <el-tab-pane label="日志设置">
-            <serial-log></serial-log>
+          <!--<el-tab-pane label="日志设置">-->
+            <!--<serial-log></serial-log>-->
+          <!--</el-tab-pane>-->
+          <el-tab-pane label="图像处理">
+            <image-edit></image-edit>
           </el-tab-pane>
         </el-tabs>
       </el-col>
@@ -48,6 +51,7 @@
 </template>
 
 <script>
+import ImageEdit from './ImageEdit/index' // 图片管理
 import SendView from './sendView'
 import SerialConfig from './serialConfig'
 import SerialLog from './serialLog'
@@ -61,7 +65,8 @@ export default {
     SerialConfig,
     SerialLog,
     CameraCtrl,
-    RaspberryPage
+    RaspberryPage,
+    ImageEdit
   },
   computed: {
     ...mapState({
