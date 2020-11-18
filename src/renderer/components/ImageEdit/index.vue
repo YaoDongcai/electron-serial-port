@@ -44,19 +44,20 @@
             </div>
         </div>
         <!-- 图片编辑区域 -->
-        <div class="edit-right">
+        <div class="edit-center">
             <!-- 编辑区域 -->
-            <div class="edit-right-header">
+            <div class="edit-center-header">
                 <!-- 标题头部文字 -->
-                <p class="edit-right-header-title">图片编辑</p>
+                <p class="edit-center-header-title">图片编辑</p>
                 <!--变成灰色即可 -->
-                <el-button size="mini" @click="handelEditImage" type="primary">图片变灰</el-button>
+                <el-button size="mini" @click="handelEditImage('toGray')" type="primary">图片变灰</el-button>
+                <el-button size="mini" @click="handelEditImage('detectImage')" type="primary">图片识别</el-button>
             </div>
         </div>
         <div class="edit-right">
-            <p>原图片</p>
+            <p class="edit-right-title">原图片</p>
             <img :src="originImgBase64" />
-            <p>处理的图片</p>
+            <p class="edit-right-title">处理的图片</p>
             <img :src="processImgBase64" />
         </div>
         <!-- dialog的图片 -->
@@ -105,8 +106,11 @@ export default {
       })
     },
     // 图片变成灰色
-    handelEditImage () {
-      processImageByBase64(this.base64Resource).then(res => {
+    handelEditImage (funName) {
+      processImageByBase64({
+        img: this.base64Resource,
+        funName: funName + ''
+      }).then(res => {
         // 提交success
         this.originImgBase64 = this.base64Resource
         this.processImgBase64 = 'data:image/png;base64,' + res.img64
@@ -148,10 +152,26 @@ export default {
     &-right {
         flex: 1;
         display: flex;
-        .edit-right-header {
+        flex-direction: column;
+        &-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 8px;
+            margin-bottom: 8px;
+            img {
+                width: auto;
+                min-width: 100px;
+                height: 150px;
+            }
+        }
+    }
+    &-center {
+        flex: 1;
+        display: flex;
+        .edit-center-header {
             padding: 8px;
             border: 1px solid #333;
-            .edit-right-header-title {
+            .edit-center-header-title {
                 color: rgba(0,0,0,0.85);
                 font-size: 14px;
                 font-weight: 600;
