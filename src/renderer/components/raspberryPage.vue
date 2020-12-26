@@ -1,63 +1,65 @@
 <template>
     <div class="raspberry">
-        <el-row :gutter="15">
-            <el-col :span="8">
-                <p class="raspberry-title">相机工作模式设置</p>
-                <el-select @change="workTypeChange" class="raspberry-select" v-model="camera.workType" >
-                    <el-option :key="index" v-for="(item, index) in workTypeList" :label="item.label" :value="item.value"></el-option>
-                </el-select>
-            </el-col>
-            <!--<el-col :span="8">-->
-                <!--<p class="raspberry-title">相机曝光补偿量设置</p>-->
-                <!--<el-select class="raspberry-select" v-model="camera.exposure" >-->
-                    <!--<el-option :key="index" v-for="(item, index) in exposureList"  :value="item.value"> {{ item.label }}</el-option>-->
-                <!--</el-select>-->
-            <!--</el-col>-->
-            <!--<el-col :span="8">-->
-                <!--<p class="raspberry-title">串口通信波特率设置</p>-->
-                <!--<el-select class="raspberry-select" v-model="camera.baudRate" >-->
-                    <!--<el-option :key="index" v-for="(item, index) in baudRateList" :label="item.label"  :value="item.value"></el-option>-->
-                <!--</el-select>-->
-            <!--</el-col>-->
-        </el-row>
-        <el-row :gutter="15">
-            <el-col :span="8">
-                <p class="raspberry-title">外接闪光灯选择</p>
-                <el-select class="raspberry-select" v-model="camera.flashCode" >
-                    <el-option :key="index" v-for="(item, index) in flashCodeList" :label="item.label"  :value="item.value"> </el-option>
-                </el-select>
-                <p class="raspberry-title">定时拍照 <el-checkbox v-model="isSetTime" @change="setTimeHandle()">
-                    是否勾选
-                </el-checkbox></p>
-                <div style="display: flex;">
-                    <span><el-input v-model.number="camera.defineTime" placeholder="请输入"/></span>
-                    <span>
-                        <el-select class="raspberry-select"  v-model="camera.unit">
+        <!-- 相机控制界面界面 -->
+        <div class="raspberry-camera">
+            <label class="raspberry-camera-title">相机控制</label>
+            <div class="raspberry-camera-item">
+                <!-- 开机 和关机 -->
+                <p class="raspberry-btn"><el-button icon="el-icon-open" @click="handleClick('on')" size="mini" type="primary">
+                    开机</el-button></p>
+                <p class="raspberry-btn"><el-button icon="el-icon-turn-off" @click="handleClick('off')" size="mini" type="danger">
+                    关机</el-button></p>
+            </div>
+            <div class="raspberry-camera-item">
+                <!-- 手动拍照 -->
+                <el-button style="width: 100%;" @click="handleClick('photo')" size="mini" type="primary">
+                    手动拍照</el-button>
+            </div>
+            <el-divider />
+            <div class="raspberry-camera-item">
+                <!-- 自动拍照 -->
+                <label class="raspberry-camera-item-label">自动拍照间隔</label>
+                <span style="width: 60px;">
+                    <el-input  v-model.number="camera.defineTime" placeholder="请输入"/>
+                </span>
+                <span style="width: 70px;">
+                    <el-select   v-model="camera.unit">
                         <el-option :key="index" v-for="(item, index) in defineTimeList" :label="item.label"  :value="item.value"></el-option>
                     </el-select>
-                    </span>
-                </div>
-            </el-col>
-            <el-col :span="4" >
+                </span>
+
+
+
+                <!--<p class="raspberry-title">定时拍照 <el-checkbox v-model="isSetTime" @change="setTimeHandle()">-->
+                    <!--是否勾选-->
+                <!--</el-checkbox></p>-->
+                <!-- 停止拍照 -->
+            </div>
+            <div class="raspberry-camera-item">
+                <!-- 开机 和关机 -->
+                <p class="raspberry-btn"><el-button icon="el-icon-timer" @click="setTimeHandle('on')" size="mini" type="primary">
+                    定时拍照</el-button></p>
+                <p class="raspberry-btn"><el-button icon="el-icon-unlock" @click="setTimeHandle('off')" size="mini" type="danger">
+                    停止拍照</el-button></p>
+            </div>
+            <el-divider/>
+            <div class="raspberry-camera-item">
                 <p class="raspberry-btn">
-                    <el-button size="mini" type="primary" @click="init">初始化</el-button>
-                </p>
-                <p class="raspberry-btn"><el-button @click="handleClick('on')" size="mini" type="primary">
-                    开机</el-button></p>
-                <p class="raspberry-btn"><el-button @click="handleClick('off')" size="mini" type="danger">
-                    关机</el-button></p>
-                <p class="raspberry-btn">
-                    <el-button size="mini" type="primary" @mouseup.native="mouseUp()" @mousedown.native="mouseDown('focusAdd')" @click="handleClick('focusAdd')">
+                    <el-button icon="el-icon-zoom-in" size="mini" type="primary" @mouseup.native="mouseUp()" @mousedown.native="mouseDown('focusAdd')" @click="handleClick('focusAdd')">
                         变焦+
                     </el-button>
                 </p>
                 <p class="raspberry-btn">
-                    <el-button size="mini" type="primary" @mouseup.native="mouseUp()" @mousedown.native="mouseDown('focusSub')" @click="handleClick('focusSub')">
+                    <el-button icon="el-icon-zoom-out" size="mini" type="primary" @mouseup.native="mouseUp()" @mousedown.native="mouseDown('focusSub')" @click="handleClick('focusSub')">
                         变焦-
                     </el-button>
                 </p>
-            </el-col>
-            <el-col :span="8">
+            </div>
+        </div>
+        <!-- 这个是设置页面-->
+        <div class="raspberry-set">
+            <label class="raspberry-set-title">相机设置</label>
+            <div class="raspberry-set-item">
                 <div class="button-group">
                     <div class="outter-circle">
                         <div class="inner-parts brown"  @click="handleClick('menuUp')">
@@ -77,55 +79,81 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
-            </el-col>
-            <el-col :span="4">
-                <p class="raspberry-btn">
-                    <el-button size="mini" type="primary" @click="showSetIP()">
-                        设置IP
-                    </el-button>
-                </p>
-                <p class="raspberry-btn">
-                    <el-button size="mini" type="primary" @click="handleClick('menuOk')">
-                        确定
-                    </el-button>
-                </p>
-                <p class="raspberry-btn"><el-button @click="handleClick('photo')" size="mini" type="primary">
-                    手动拍照</el-button></p>
-                <p class="raspberry-btn"><el-button @click="handleDownloadStartClick()" size="mini" type="primary">
-                   下载开始</el-button></p>
+
+            <div class="raspberry-set-item" style="margin-top: 30px;">
+                <el-button style="width: 100%;" size="mini" type="primary" @click="handleClick('menuOk')">
+                    菜单确定
+                </el-button>
+            </div>
+
+        </div>
+
+        <div class="raspberry-col">
+            <div class="raspberry-controller">
+                <label class="raspberry-controller-title">数据控制</label>
+                <div class="raspberry-controller-item">
+                    <el-button  icon="el-icon-download" style="width: 100%;" @click="handleDownloadStartClick()" size="mini" type="primary">
+                        下载开始</el-button>
+                </div>
+                <div class="raspberry-controller-item">
+                    <el-button icon="el-icon-close" style="width: 100%;" @click="handleDownloadEndClick()" size="mini" type="primary">
+                        下载结束</el-button>
+                </div>
+            </div>
+
+            <div class="raspberry-controller" style="margin-top: 20px;">
+                <label class="raspberry-controller-title">网络连接</label>
+                <!-- IP 显示 -->
+
+                <div class="raspberry-controller-item">
+                    <el-button icon="el-icon-switch-button" style="width: 100%;" size="mini" type="primary" @click="init">初始化</el-button>
+                </div>
+            </div>
+        </div>
+
+        <!--<el-row :gutter="15">-->
+            <!--<el-col :span="8">-->
+                <!--<p class="raspberry-title">相机工作模式设置</p>-->
+                <!--<el-select @change="workTypeChange" class="raspberry-select" v-model="camera.workType" >-->
+                    <!--<el-option :key="index" v-for="(item, index) in workTypeList" :label="item.label" :value="item.value"></el-option>-->
+                <!--</el-select>-->
+            <!--</el-col>-->
+            <!--<el-col :span="8">-->
+                <!--<p class="raspberry-title">相机曝光补偿量设置</p>-->
+                <!--<el-select class="raspberry-select" v-model="camera.exposure" >-->
+                    <!--<el-option :key="index" v-for="(item, index) in exposureList"  :value="item.value"> {{ item.label }}</el-option>-->
+                <!--</el-select>-->
+            <!--</el-col>-->
+            <!--<el-col :span="8">-->
+                <!--<p class="raspberry-title">串口通信波特率设置</p>-->
+                <!--<el-select class="raspberry-select" v-model="camera.baudRate" >-->
+                    <!--<el-option :key="index" v-for="(item, index) in baudRateList" :label="item.label"  :value="item.value"></el-option>-->
+                <!--</el-select>-->
+            <!--</el-col>-->
+        <!--</el-row>-->
+
+        <!--<el-row :gutter="15">-->
+            <!--<el-col :span="8">-->
+                <!--<p class="raspberry-title">外接闪光灯选择</p>-->
+                <!--<el-select class="raspberry-select" v-model="camera.flashCode" >-->
+                    <!--<el-option :key="index" v-for="(item, index) in flashCodeList" :label="item.label"  :value="item.value"> </el-option>-->
+                <!--</el-select>-->
+            <!--</el-col>-->
+
+            <!--<el-col :span="4">-->
+                <!--<p class="raspberry-btn">-->
+                    <!--<el-button size="mini" type="primary" @click="showSetIP()">-->
+                        <!--设置IP-->
+                    <!--</el-button>-->
+                <!--</p>-->
                 <!--<p class="raspberry-btn"><el-button @click="handle2Click('SDToggleOn')" size="mini" type="primary">-->
                     <!--SD卡通电</el-button></p>-->
                 <!--<p class="raspberry-btn"><el-button @click="handle2Click('SDOn')" size="mini" type="primary">-->
                     <!--USB通电</el-button></p>-->
-                <p class="raspberry-btn"><el-button @click="handleDownloadEndClick()" size="mini" type="primary">
-                    下载结束</el-button></p>
-                <!--<p class="raspberry-btn"><el-button @click="handle2Click('SDToggleOff')" size="mini" type="primary">-->
-                    <!--SD卡Off</el-button></p>-->
-                <!--<p class="raspberry-btn"><el-button @click="handle2Click('SDOff')" size="mini" type="primary">-->
-                    <!--USB断点</el-button></p>-->
-                <!--<p class="raspberry-btn">-->
-                    <!--<el-button size="mini" type="primary" @click="handleClick('downloadStart')">-->
-                        <!--下载开始-->
-                    <!--</el-button>-->
-                <!--</p>-->
-                <!--<p class="raspberry-btn">-->
-                    <!--<el-button size="mini" type="primary" @click="handleClick('downloadEnd')">-->
-                        <!--下载结束-->
-                    <!--</el-button>-->
-                <!--</p>-->
-                <!--<p class="raspberry-btn">-->
-                    <!--<el-button size="mini" type="primary" @click="handleClick('audioStart')">-->
-                        <!--录像开始-->
-                    <!--</el-button>-->
-                <!--</p>-->
-                <!--<p class="raspberry-btn">-->
-                    <!--<el-button size="mini" type="primary" @click="handleClick('audioEnd')">-->
-                        <!--录像结束-->
-                    <!--</el-button>-->
-                <!--</p>-->
-            </el-col>
-        </el-row>
+            <!--</el-col>-->
+        <!--</el-row>-->
         <el-dialog title="IP设置" :visible.sync="dialogVisible">
             <div class="ip-ul" :key="index" v-for="(IpItem, index) in lists">
                 <label class="ip-ul-label">{{ IpItem.label }}</label>
@@ -306,7 +334,12 @@
       }
     },
     methods: {
-      setTimeHandle (value) {
+      setTimeHandle (type) {
+        if (type === 'on') {
+          this.isSetTime = true
+        } else {
+          this.isSetTime = false
+        }
         if (!this.isSetTime) {
           // 如果是勾选了 取消定时器
           this.$http
@@ -601,16 +634,128 @@
     }
 // 树莓派的样式
 .raspberry {
+    width: 100%;
+    height: 80vh;
+    display: flex;
+    &-col {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        .raspberry-controller {
+            /* 数据控制 */
+            flex: 1;
+            display: flex;
+            margin-left: 15px;
+            position: relative;
+            flex-direction: column;
+            border: medium double black;
+            &-item {
+                display: flex;
+                flex-direction: row;
+                padding: 15px 15px;
+            }
+            &-title {
+                font-weight: bold;
+                height: 20px;
+                line-height: 20px;
+                font-size: 14px;
+                background-color: white;
+                position: absolute;
+                top: -10px;
+                left:10px;
+            }
+        }
+    }
+
+    &-camera {
+        width: 250px;
+        display: flex;
+        position: relative;
+        flex-direction: column;
+        border: medium double black;
+        &-item {
+            display: flex;
+            flex-direction: row;
+            padding: 15px 15px;
+            .raspberry-camera-item-label {
+                font-size: 14px;
+                line-height: 40px;
+                font-weight: bold;
+            }
+            .raspberry-btn {
+                flex: 1;
+                &:last-of-type {
+                    margin-left: 15px;
+                }
+            }
+        }
+        &-title {
+            font-weight: bold;
+            height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+            background-color: white;
+            position: absolute;
+            top: -10px;
+            left:10px;
+        }
+    }
+    &-set {
+        flex: 1;
+        margin-left: 15px;
+        display: flex;
+        position: relative;
+        flex-direction: column;
+        border: medium double black;
+        &-title {
+            font-weight: bold;
+            height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+            background-color: white;
+            position: absolute;
+            top: -10px;
+            left:10px;
+        }
+        &-item {
+            display: flex;
+            padding: 15px 15px;
+        }
+    }
+    .raspberry-serial {
+        width: 200px;
+        padding: 30px 15px;
+        display: flex;
+        position: relative;
+        flex-direction: column;
+        border: medium double white;
+        &-title {
+            font-weight: bold;
+            height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+            background-color: white;
+            position: absolute;
+            top: -10px;
+            left:10px;
+        }
+        &-item {
+            display: flex;
+            .label {
+                width: 70px;
+            }
+            .label-select {
+                flex: 1;
+                width: 100%;
+            }
+        }
+    }
      &-title {
          font-size: 16px;
          font-weight: 400;
      }
     &-select {
         width: 100%;
-    }
-    &-btn {
-        margin-top: 10px;
-        margin-left: 15px;
     }
 }
 </style>

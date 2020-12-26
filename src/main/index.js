@@ -20,9 +20,9 @@ function createWindow () {
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    height: 430,
+    height: 550,
     useContentSize: true,
-    width: 600,
+    width: 700,
     webPreferences: {
       webSecurity: false // 降低安全性 是为了dev 开发
     }
