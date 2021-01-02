@@ -102,7 +102,7 @@ export default {
     box-shadow: none;
 }
 .tab-page {
-    width: 660px;
+    /*width: 700px;*/
   .tab-page-row {
 
   }

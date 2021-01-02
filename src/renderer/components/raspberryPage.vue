@@ -15,7 +15,7 @@
                 <el-button style="width: 100%;" @click="handleClick('photo')" size="mini" type="primary">
                     手动拍照</el-button>
             </div>
-            <el-divider />
+
             <div class="raspberry-camera-item">
                 <!-- 自动拍照 -->
                 <label class="raspberry-camera-item-label">自动拍照间隔</label>
@@ -27,13 +27,18 @@
                         <el-option :key="index" v-for="(item, index) in defineTimeList" :label="item.label"  :value="item.value"></el-option>
                     </el-select>
                 </span>
-
-
-
-                <!--<p class="raspberry-title">定时拍照 <el-checkbox v-model="isSetTime" @change="setTimeHandle()">-->
-                    <!--是否勾选-->
-                <!--</el-checkbox></p>-->
-                <!-- 停止拍照 -->
+            </div>
+            <div class="raspberry-camera-item">
+                <!-- 自动拍照 -->
+                <label class="raspberry-camera-item-label">相机模式</label>
+                <span style="width: 100px;">
+                    <el-select   v-model="camera.workType">
+                        <el-option :key="index" v-for="(item, index) in workTypeList" :label="item.label"  :value="item.value"></el-option>
+                    </el-select>
+                </span>
+                <span>
+                    <el-button @click="setModel" type="primary" size="mini">确定</el-button>
+                </span>
             </div>
             <div class="raspberry-camera-item">
                 <!-- 开机 和关机 -->
@@ -42,15 +47,21 @@
                 <p class="raspberry-btn"><el-button icon="el-icon-unlock" @click="setTimeHandle('off')" size="mini" type="danger">
                     停止拍照</el-button></p>
             </div>
-            <el-divider/>
+            <div class="raspberry-camera-item">
+                <!-- 开机 和关机 -->
+                <p class="raspberry-btn"><el-button icon="el-icon-timer" @click="handleClick('audioStart')" size="mini" type="primary">
+                    录像开始</el-button></p>
+                <p class="raspberry-btn"><el-button icon="el-icon-unlock" @click="handleClick('audioEnd')" size="mini" type="danger">
+                    录像结束</el-button></p>
+            </div>
             <div class="raspberry-camera-item">
                 <p class="raspberry-btn">
-                    <el-button icon="el-icon-zoom-in" size="mini" type="primary" @mouseup.native="mouseUp()" @mousedown.native="mouseDown('focusAdd')" @click="handleClick('focusAdd')">
+                    <el-button :disabled="versionDisabled" icon="el-icon-zoom-in" size="mini" type="primary" @mouseup.native="mouseUp()" @mousedown.native="mouseDown('focusAdd')" @click="handleClick('focusAdd')">
                         变焦+
                     </el-button>
                 </p>
                 <p class="raspberry-btn">
-                    <el-button icon="el-icon-zoom-out" size="mini" type="primary" @mouseup.native="mouseUp()" @mousedown.native="mouseDown('focusSub')" @click="handleClick('focusSub')">
+                    <el-button :disabled="versionDisabled" icon="el-icon-zoom-out" size="mini" type="primary" @mouseup.native="mouseUp()" @mousedown.native="mouseDown('focusSub')" @click="handleClick('focusSub')">
                         变焦-
                     </el-button>
                 </p>
@@ -108,7 +119,20 @@
                 <!-- IP 显示 -->
 
                 <div class="raspberry-controller-item">
-                    <el-button icon="el-icon-switch-button" style="width: 100%;" size="mini" type="primary" @click="init">初始化</el-button>
+                    <el-button :loading="initLoading" icon="el-icon-switch-button" style="width: 100%;" size="mini" type="success" @click="init">初始化</el-button>
+                </div>
+                <div class="raspberry-controller-item">
+                    <!-- 版本切换 -->
+                    <!-- 低配版本的配置级别和高配版本是不一样的 -->
+                    <label class="raspberry-controller-item-label">版本切换</label>
+                    <span style="width: 100px;">
+                    <el-select   v-model="camera.versionType">
+                        <el-option :key="index" v-for="(item, index) in versionList" :label="item.label"  :value="item.value"></el-option>
+                    </el-select>
+                </span>
+                    <span>
+                    <el-button @click="choiseVersion" type="primary" size="mini">确定</el-button>
+                </span>
                 </div>
             </div>
         </div>
@@ -176,6 +200,8 @@
     name: 'raspberryPage', // 树莓派控制系统
     data () {
       return {
+        initLoading: false,
+        versionDisabled: true, // 默认低版本是不能操作的
         timePhotoHandle: null, // 定时拍照句柄
         isSetTime: false, // 是否勾选为定时拍照
         lists: [{
@@ -240,11 +266,12 @@
         },
         camera: {
           unit: 's',
-          workType: 'autoModel',
+          workType: 'P',
+          versionType: 'LOW', // 低版本
           exposure: '', // 曝光补偿设置
           baudRate: '0x04', // 波特率设置
           flashCode: '0x01', // 闪光灯选择码
-          defineTime: 10 // 定时拍照 只能是数字
+          defineTime: 7 // 定时拍照 只能是数字 默认为7秒
         },
         defineTimeList: [
           {label: '秒', value: 's'},
@@ -297,43 +324,45 @@
             value: '0x02'
           }
         ],
+        versionList: [{
+          label: '前期版本',
+          value: 'LOW'
+        }, {
+          label: '通用版本',
+          value: 'HIGH'
+        }],
         workTypeList: [{
-          label: 'AUTO(自动)',
-          value: 'autoModel'
-        }, {
-          label: 'Av',
-          value: 'avModel'
-        }, {
-          label: 'HDR(高反差景象)',
-          value: 'hdrModel'
-        }, {
-          label: '人像',
-          value: 'personImageModel'
-        }, {
-          label: 'C1',
-          value: 'c1Model'
-        }, {
-          label: 'M(手动)',
-          value: 'mModel'
-        }, {
-          label: 'Tv(快门优先)',
-          value: 'tvModel'
-        }, {
-          label: '摄像',
-          value: 'audioModel'
-        }, {
-          label: 'C2',
-          value: 'c2Model'
-        }, {
           label: 'P(程序控制)',
-          value: 'pModel'
+          value: 'P'
         }, {
-          label: '混合(摄像和拍照)',
-          value: 'mixinModel'
+          label: 'AV模式',
+          value: 'AV'
+        }, {
+          label: 'Tv模式',
+          value: 'TV'
+        }, {
+          label: 'AUTO模式',
+          value: 'AUTO'
         }]
       }
     },
     methods: {
+      // 模式识别
+      choiseVersion () {
+        // 获取当前的参数
+        const type = this.camera.versionType
+        console.log('type', type)
+        switch (type) {
+          case 'LOW':
+            // 表示这个是低版本
+            this.versionDisabled = true
+            break
+          case 'HIGH':
+            // 表示这个是高版本
+            this.versionDisabled = false
+            break
+        }
+      },
       setTimeHandle (type) {
         if (type === 'on') {
           this.isSetTime = true
@@ -366,6 +395,8 @@
           this.$http
             .post(this.url + '/GPIOControllerIntertime', {
               send: 'photo',
+              defineTime: this.camera.defineTime,
+              unit: this.camera.unit,
               timeOut: time
             })
             .then((res) => {
@@ -501,10 +532,19 @@
             this.$message.success('发送成功')
           })
       },
+      // 模式选择
+      setModel () {
+        this.$http
+          .post(this.url + '/GPIOControllerByModel', {
+            send: this.camera.workType
+          })
+          .then((res) => {
+
+          })
+      },
       handleClick (type) {
         let message = ''
         message = this.commandCodeObj[type + '']
-        console.log('message', message, 'type', type)
         this.$http
           .post(this.url + '/GPIOController', {
             send: message
@@ -532,21 +572,27 @@
       },
       // 测试是否已经连接树莓派了 或者树莓派是否开始启动成功了
       async init () {
-        const loading = this.$loading({
-          lock: true,
-          text: 'Loading',
-          spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
-        })
+        // const loading = this.$loading({
+        //   lock: true,
+        //   text: 'Loading',
+        //   spinner: 'el-icon-loading',
+        //   background: 'rgba(0, 0, 0, 0.7)'
+        // })
+        this.initLoading = true
         // 随便发一个请求去请求树莓派地址 然后看有没有响应即可
         this.$http.get(this.url + '/initGPIOController').then(res => {
           // 获取了所有的数据
-          loading.close()
-          this.$message.success('初始化各个GPIO口成功')
+          this.initLoading = false
+          // 将返回的数据获取到 这样就可以初始化这边的数据
+          const json = res.data.data
+          this.camera.workType = json.workType
+          this.camera.unit = json.unit
+          this.camera.defineTime = json.defineTime
+          this.$message.success('相机连接成功')
         // 开始初始化usb的接口 开始提交数据
         }).catch(() => {
-          loading.close()
-          this.$message.success('连接失败，请检查设备服务是否启动')
+          this.initLoading = false
+          this.$message.error('连接失败，请检查设备服务是否启动')
         })
       }
     }
@@ -639,7 +685,7 @@
     display: flex;
     &-col {
         display: flex;
-        flex: 1;
+        /*flex: 1;*/
         flex-direction: column;
         .raspberry-controller {
             /* 数据控制 */
@@ -653,6 +699,12 @@
                 display: flex;
                 flex-direction: row;
                 padding: 15px 15px;
+                .raspberry-controller-item-label {
+                    font-size: 14px;
+                    height: 28px;
+                    line-height: 28px;
+                    font-weight: bold;
+                }
             }
             &-title {
                 font-weight: bold;
@@ -679,11 +731,15 @@
             padding: 15px 15px;
             .raspberry-camera-item-label {
                 font-size: 14px;
-                line-height: 40px;
+                height: 28px;
+                line-height: 28px;
                 font-weight: bold;
             }
             .raspberry-btn {
                 flex: 1;
+                .el-button {
+                    width: 100%;
+                }
                 &:last-of-type {
                     margin-left: 15px;
                 }
