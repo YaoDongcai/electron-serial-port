@@ -11,6 +11,9 @@
 </script>
 
 <style>
+  .el-form-item {
+    margin-bottom: 0px;
+  }
   /* CSS */
   .el-input__icon {
     line-height: 28px !important;

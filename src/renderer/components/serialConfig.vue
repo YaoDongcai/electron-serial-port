@@ -50,11 +50,11 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button v-if="!isDisabled" type="primary" @click="openSerialPort('ruleForm')">
-          <span class="iconfont icon-dakai"></span>打开串口
+        <el-button size="mini" v-if="!isDisabled" type="primary" @click="openSerialPort('ruleForm')">
+         打开串口
         </el-button>
-        <el-button v-if="isDisabled" type="info" @click="closeSerialPort('ruleForm')">
-          <span class="iconfont icon-guanbi"></span>关闭串口
+        <el-button size="mini" v-if="isDisabled" type="info" @click="closeSerialPort('ruleForm')">
+          关闭串口
         </el-button>
       </el-form-item>
     </el-form>
@@ -89,9 +89,9 @@ export default {
     const self = this
     Bus.$on('sendData', (value) => {
       // 获取到这个数据
-      console.log('value')
+      console.log('value1', value)
       this.port.write(value.value, value.sendType, err => {
-        console.log('err', err)
+        console.log('value2', value.value)
         if (err) {
           return console.log('write Error', err.message)
         } else {
@@ -194,7 +194,6 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.serial-config {
-}
+<style>
+
 </style>

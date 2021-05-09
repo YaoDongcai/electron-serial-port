@@ -42,7 +42,7 @@
             </div>
             <div class="raspberry-camera-item">
                 <!-- 开机 和关机 -->
-                <p class="raspberry-btn"><el-button icon="el-icon-timer" @click="setTimeHandle('on')" size="mini" type="primary">
+                <p class="raspberry-btn"><el-button  icon="el-icon-timer" @click="setTimeHandle('on')" size="mini" type="primary">
                     定时拍照</el-button></p>
                 <p class="raspberry-btn"><el-button icon="el-icon-unlock" @click="setTimeHandle('off')" size="mini" type="danger">
                     停止拍照</el-button></p>
@@ -91,14 +91,19 @@
                     </div>
                 </div>
             </div>
-
-
             <div class="raspberry-set-item" style="margin-top: 30px;">
                 <el-button style="width: 100%;" size="mini" type="primary" @click="handleClick('menuOk')">
                     菜单确定
                 </el-button>
             </div>
-
+            <div class="raspberry-set-subtitle">
+                日志显示
+            </div>
+            <ul class="raspberry-set-logs-ul">
+                <li class="logs-li" v-for="item in logs">
+                    <p :class="item.type"> {{ item.content }}</p>
+                </li>
+            </ul>
         </div>
 
         <div class="raspberry-col">
@@ -112,28 +117,52 @@
                     <el-button icon="el-icon-close" style="width: 100%;" @click="handleDownloadEndClick()" size="mini" type="primary">
                         下载结束</el-button>
                 </div>
+                <div class="raspberry-controller-item">
+                    <el-button icon="el-icon-close" style="width: 100%;" @click="handleExportClick()" size="mini" type="primary">
+                        导出数据(excel)</el-button>
+                </div>
+                <div class="raspberry-controller-item">
+                    <el-button icon="el-icon-close" style="width: 100%;" @click="handleCleanClick()" size="mini" type="primary">
+                        清空数据库</el-button>
+                </div>
             </div>
 
-            <div class="raspberry-controller" style="margin-top: 20px;">
-                <label class="raspberry-controller-title">网络连接</label>
+            <div class="raspberry-controller" style="margin-top: 10px;">
+                <label class="raspberry-controller-title">网络控制</label>
                 <!-- IP 显示 -->
 
+                <!--<div class="raspberry-controller-item">-->
+                    <!--<el-button :loading="initLoading" icon="el-icon-switch-button" style="width: 100%;" size="mini" type="success" @click="init">连接相机</el-button>-->
+                <!--</div>-->
                 <div class="raspberry-controller-item">
-                    <el-button :loading="initLoading" icon="el-icon-switch-button" style="width: 100%;" size="mini" type="success" @click="init">初始化</el-button>
-                </div>
-                <div class="raspberry-controller-item">
+                    <label class="raspberry-controller-item-label">相机选择</label>
+                    <span style="width: 100px;">
+                    <el-select @change="versionChangeEvent"  v-model="camera.versions">
+                        <el-option :key="index" v-for="(item, index) in versionsList" :label="item.label"  :value="item.value"></el-option>
+                    </el-select>
+                    </span>
+                    <span>
+                    <el-button @click="init" type="primary" size="mini">连接相机</el-button>
+                    </span>
                     <!-- 版本切换 -->
                     <!-- 低配版本的配置级别和高配版本是不一样的 -->
-                    <label class="raspberry-controller-item-label">版本切换</label>
-                    <span style="width: 100px;">
-                    <el-select   v-model="camera.versionType">
-                        <el-option :key="index" v-for="(item, index) in versionList" :label="item.label"  :value="item.value"></el-option>
-                    </el-select>
-                </span>
-                    <span>
-                    <el-button @click="choiseVersion" type="primary" size="mini">确定</el-button>
-                </span>
+                    <!--<label class="raspberry-controller-item-label">版本切换</label>-->
+                    <!--<span style="width: 100px;">-->
+                    <!--<el-select   v-model="camera.versionType">-->
+                        <!--<el-option :key="index" v-for="(item, index) in versionList" :label="item.label"  :value="item.value"></el-option>-->
+                    <!--</el-select>-->
+                    <!--</span>-->
+                    <!--<span>-->
+                    <!--<el-button @click="choiseVersion" type="primary" size="mini">确定</el-button>-->
+                    <!--</span>-->
                 </div>
+                <!--<label class="raspberry-controller-title">串口连接</label>-->
+            </div>
+        </div>
+        <div class="raspberry-col">
+            <div class="raspberry-controller">
+                <label class="raspberry-controller-title">串口控制</label>
+                <serial-config></serial-config>
             </div>
         </div>
 
@@ -195,11 +224,47 @@
 </template>
 
 <script>
+  import Bus from '../utils/bus.js'
+  import { mapState } from 'vuex'
+  import utils from '../utils/Excel'
+  import SerialConfig from './serialConfig'
   const child = require('child_process')
-  export default {
+  const uatCommandCodeObj = {
+    'on': 'AA7511020000CC', // 开机
+    'off': 'AA7522020000FF', // 关机
+    'photo': 'AA7533020000EE', // 手动拍照
+    'menuOn': 'AA7577020000AA',
+    'menuOff': 'AA758802000055',
+    'menuUp': 'AA759902000044',
+    'menuDown': 'AA75AA02000077',
+    'menuLeft': 'AA75BB02000066',
+    'menuRight': 'AA75CC02000011',
+    'menuOk': 'AA75DD02000000',
+    'P': 'AA7555020a0082',
+    'AUTO': 'AA755502010089',
+    'TV': 'AA75550202008A',
+    'AV': 'AA75550207008F'
+  }
+export default {
     name: 'raspberryPage', // 树莓派控制系统
+    components: {
+      SerialConfig
+    },
+    computed: {
+      ...mapState({
+        isOpenSerialPort: state => state.SerialPort.isOpenSerialPort
+      })
+    },
     data () {
       return {
+        versionsList: [{
+          label: '1200万像素', // G16
+          value: '1'
+        }, {
+          label: '2000万像素',// G5x
+          value: '2'
+        }],
+        logs: [], // 日志显示数组行列
         initLoading: false,
         versionDisabled: true, // 默认低版本是不能操作的
         timePhotoHandle: null, // 定时拍照句柄
@@ -265,8 +330,10 @@
           audioEnd: 'audioEnd' // 录像结束
         },
         camera: {
+          versions: '1',
           unit: 's',
           workType: 'P',
+          isSetTime: false, // 默认为false
           versionType: 'LOW', // 低版本
           exposure: '', // 曝光补偿设置
           baudRate: '0x04', // 波特率设置
@@ -347,6 +414,107 @@
       }
     },
     methods: {
+      versionChangeEvent (value) {
+        if (value == '2') {
+          this.workTypeList = [{
+            label: 'P(程序控制)',
+            value: 'P'
+          }, {
+            label: 'AV模式',
+            value: 'AV'
+          }, {
+            label: 'Tv模式',
+            value: 'TV'
+          }, {
+            label: 'AUTO模式',
+            value: 'AUTO'
+          }, {
+            label: '混合模式',
+            value: 'MIX'
+          }, {
+            label: '摄像模式',
+            value: 'VIDEO'
+          }]
+        } else {
+          this.workTypeList = [{
+            label: 'P(程序控制)',
+            value: 'P'
+          }, {
+            label: 'AV模式',
+            value: 'AV'
+          }, {
+            label: 'Tv模式',
+            value: 'TV'
+          }, {
+            label: 'AUTO模式',
+            value: 'AUTO'
+          }]
+        }
+      },
+      handleCleanClick () {
+        // 清空数据
+        this.$http.get(this.url + '/clearDB').then((res) => {
+          const count = res.data.data
+          this.logs.unshift({
+            type: 'success',
+            content: `清空${count}数据成功`
+          })
+        })
+      },
+      handleExportClick () {
+        // 第一步先要获取数据
+        // 先打开弹出框子
+        const { dialog } = require('electron').remote
+        const that = this
+        this.$http
+          .get(this.url + '/exportData')
+          .then((res) => {
+            const title = [['拍照日期', '序号']]
+            const body = []
+            const result = res.data.data.sort(function(a, b) {
+              return a.index - b.index < 0
+            })
+            result.map(item => {
+              if (item.time) {
+                body.push([item.time, item.index])
+              } else {
+                body.push(['', item.index])
+              }
+            })
+            if(body.length ==0 ) {
+              this.logs.unshift({
+                type: 'success',
+                content: '当前数据为空'
+              })
+              return;
+            }
+            dialog.showSaveDialog({
+              title: '保存文件Excel',
+              defaultPath: '/',
+              filters: [{
+                name: 'Excel',
+                extensions: ['csv']
+              }]
+            }, function (fileName) {
+              utils.exportFromArray({
+                title,
+                body,
+                name: '表格',
+                suffix: 'csv',
+                merges: [
+                  { s: { r: 0, c: 0 }, e: { r: 1, c: 0 } },
+                  { s: { r: 0, c: 1 }, e: { r: 0, c: 2 } },
+                  { s: { r: 0, c: 3 }, e: { r: 0, c: 4 } },
+                  { s: { r: 0, c: 5 }, e: { r: 1, c: 5 } }
+                ]
+              }, fileName)
+              that.logs.unshift({
+                type: 'success',
+                content: '数据库导出数据成功'
+              })
+            })
+          })
+      },
       // 模式识别
       choiseVersion () {
         // 获取当前的参数
@@ -371,27 +539,57 @@
         }
         if (!this.isSetTime) {
           // 如果是勾选了 取消定时器
+          // 如果当前已经是定时拍照 那么就不需要再去调用了
+          if (this.isOpenSerialPort) {
+            Bus.$emit('sendData', {
+              'sendType': 'hex', // 表示为16进制
+              'value': 'AA756602000000' //  对应的值即可// 表示为发送的值
+            })
+            return
+          }
           this.$http
             .post(this.url + '/GPIOControllerIntertime', {
               send: 'noPhoto'
             })
             .then((res) => {
-              this.$message.success('取消成功')
+              this.logs.unshift({
+                type: 'success',
+                content: '取消成功'
+              })
             })
         } else {
           let time = null
+          let uatUnit = '', intHex = ''
+          intHex = (this.camera.defineTime).toString(16)
+          if (intHex.length == 1) {
+            intHex = '0' + '' + intHex
+          }
           switch (this.camera.unit) {
             case 's':
               time = parseInt(this.camera.defineTime * 1000)
+              uatUnit = '01'
               break
             case 'm':
               time = parseInt(this.camera.defineTime * 1000 * 60)
+              uatUnit = '02'
               break
             case 'h':
               time = parseInt(this.camera.defineTime * 1000 * 60 * 60)
+              uatUnit = '03'
               break
           }
-          // 发送对应的指令
+          // 发送对应的指令 表示为端口其实为打开的
+          if (this.isOpenSerialPort) {
+            Bus.$emit('sendData', {
+              'sendType': 'hex', // 表示为16进制
+              'value': 'AA754402' + intHex + uatUnit + '20' //  对应的值即可// 表示为发送的值
+            })
+            this.logs.unshift({
+              type: 'success',
+              content: '定时拍照设置成功'
+            })
+            return
+          }
           this.$http
             .post(this.url + '/GPIOControllerIntertime', {
               send: 'photo',
@@ -400,7 +598,10 @@
               timeOut: time
             })
             .then((res) => {
-              this.$message.success('定时操作指令写入成功')
+              this.logs.unshift({
+                type: 'success',
+                content: '定时拍照设置成功'
+              })
             })
         }
       },
@@ -411,10 +612,16 @@
           // 如果是一个数字 那么就需要判断当前的值需要为0~255之间的值
           console.log(Number.isInteger(value), value)
           if (value < 0) {
-            this.$message.error('当前的值小于0,请重新输入')
+            this.logs.unshift({
+              type: 'error',
+              content: '当前的值小于0,请重新输入'
+            })
           }
           if (value > 255) {
-            this.$message.error('当前的值大于255,请重新输入')
+            this.logs.unshift({
+              type: 'error',
+              content: '当前的值大于255,请重新输入'
+            })
           }
         }
       },
@@ -522,29 +729,74 @@
               // 这个时候需要判断这个res 的内容
               if (res.status === 2) {
                 // 表示这个其实是一个错误的信息
-                this.$message.error(res.message + '')
+                this.logs.unshift({
+                  type: 'error',
+                  content: '出现错误了'
+                })
               } else {
-                this.$message.success('发送成功')
+                this.logs.unshift({
+                  type: 'success',
+                  content: '发送成功'
+                })
               }
               return
             }
-
-            this.$message.success('发送成功')
+            this.logs.unshift({
+              type: 'success',
+              content: '发送成功'
+            })
           })
       },
       // 模式选择
       setModel () {
+        if (this.isOpenSerialPort) {
+          let value = ''
+          switch (this.camera.workType) {
+            case 'P':
+              value = 'AA7555020A0082'
+              break
+            case 'AUTO':
+              value = 'AA755502010089'
+              break
+            case 'AV':
+              value = 'AA75550207008F'
+              break
+            case 'TV':
+              value = 'AA75550202008A'
+              break
+            default:
+              value = 'AA755502010089'
+          }
+          Bus.$emit('sendData', {
+            'sendType': 'hex', // 表示为16进制
+            'value': value //  对应的值即可// 表示为发送的值
+          })
+          return
+        }
         this.$http
           .post(this.url + '/GPIOControllerByModel', {
             send: this.camera.workType
           })
           .then((res) => {
-
+            this.logs.unshift({
+              type: 'success',
+              content: '发送成功'
+            })
           })
       },
       handleClick (type) {
         let message = ''
         message = this.commandCodeObj[type + '']
+        // 根据这个命令来实现
+        if (this.isOpenSerialPort) {
+          // 如果当前是串口打开了 那么就优先串口来实现
+          const value = uatCommandCodeObj[type]// 串口对应发送的值
+          Bus.$emit('sendData', {
+            'sendType': 'hex', // 表示为16进制
+            'value': value //  对应的值即可// 表示为发送的值
+          })
+          return
+        }
         this.$http
           .post(this.url + '/GPIOController', {
             send: message
@@ -560,14 +812,18 @@
               // 这个时候需要判断这个res 的内容
               if (res.status === 2) {
                 // 表示这个其实是一个错误的信息
-                this.$message.error(res.message + '')
-              } else {
-                this.$message.success('发送成功')
+                this.logs.unshift({
+                  type: 'error',
+                  content: '发生错误'
+                })
               }
               return
             }
 
-            this.$message.success('发送成功')
+            this.logs.unshift({
+              type: 'success',
+              content: '发送成功'
+            })
           })
       },
       // 测试是否已经连接树莓派了 或者树莓派是否开始启动成功了
@@ -580,19 +836,42 @@
         // })
         this.initLoading = true
         // 随便发一个请求去请求树莓派地址 然后看有没有响应即可
-        this.$http.get(this.url + '/initGPIOController').then(res => {
+        const nTimeStamps = Math.floor(Date.now() / 1000)
+        const date = new Date(nTimeStamps * 1000)
+        const retDate = {
+          nYear: date.getFullYear(),
+          nMonth: date.getMonth() + 1,
+          nDay: date.getDate(),
+          nHour: date.getHours(),
+          nMinutes: date.getMinutes(),
+          nSeconds: date.getSeconds()
+        }
+        const dateTempYMD = retDate.nYear + '-' + retDate.nMonth + '-' + retDate.nDay
+        const dateTempHMS = retDate.nHour + ':' + retDate.nMinutes + ':' + retDate.nSeconds
+        this.$http.post(this.url + '/initGPIOController', {
+          dateYMD: dateTempYMD,
+          dateHMS: dateTempHMS,
+          versionType: this.camera.versions // 摄像机的版本
+        }).then(res => {
           // 获取了所有的数据
           this.initLoading = false
           // 将返回的数据获取到 这样就可以初始化这边的数据
           const json = res.data.data
           this.camera.workType = json.workType
-          this.camera.unit = json.unit
-          this.camera.defineTime = json.defineTime
-          this.$message.success('相机连接成功')
+          this.camera.isSetTime = json.isSetTime !== 0
+          this.camera.unit = json.unit || 's'
+          this.camera.defineTime = json.defineTime || 7
+          this.logs.unshift({
+            type: 'success',
+            content: '相机连接成功'
+          })
         // 开始初始化usb的接口 开始提交数据
         }).catch(() => {
           this.initLoading = false
-          this.$message.error('连接失败，请检查设备服务是否启动')
+          this.logs.unshift({
+            type: 'error',
+            content: '连接失败，请检查设备服务是否启动'
+          })
         })
       }
     }
@@ -600,6 +879,9 @@
 </script>
 
 <style lang="scss" scoped>
+    .el-input__inner {
+        font-size: 12px;
+    }
     .ip-ul {
         display: flex;
         flex-direction: row;
@@ -763,6 +1045,25 @@
         position: relative;
         flex-direction: column;
         border: medium double black;
+        &-subtitle {
+            font-size: 14px;
+            margin-left: 18px;
+        }
+        &-logs-ul {
+            display: flex;
+            flex-direction: column;
+            list-style-type: none;
+            margin-left: 18px;
+            .logs-li {
+                font-size: 12px;
+                .success {
+                    color: #67C23A;
+                }
+                .error {
+                    color: #F56C6C;
+                }
+            }
+        }
         &-title {
             font-weight: bold;
             height: 20px;
