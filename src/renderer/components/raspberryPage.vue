@@ -99,11 +99,13 @@
             <div class="raspberry-set-subtitle">
                 日志显示
             </div>
-            <ul class="raspberry-set-logs-ul">
-                <li class="logs-li" v-for="item in logs">
-                    <p :class="item.type"> {{ item.content }}</p>
-                </li>
-            </ul>
+            <el-scrollbar style="height: 300px;">
+                <ul class="raspberry-set-logs-ul">
+                    <li class="logs-li" v-for="item in logs">
+                        <p :class="item.type"> {{ item.content }}</p>
+                    </li>
+                </ul>
+            </el-scrollbar>
         </div>
 
         <div class="raspberry-col">
@@ -229,6 +231,7 @@
   import utils from '../utils/Excel'
   import SerialConfig from './serialConfig'
   const child = require('child_process')
+  import { getDate } from '../utils/index'
   const uatCommandCodeObj = {
     'on': 'AA7511020000CC', // 开机
     'off': 'AA7522020000FF', // 关机
@@ -455,7 +458,7 @@ export default {
         // 清空数据
         this.$http.get(this.url + '/clearDB').then((res) => {
           const count = res.data.data
-          this.logs.unshift({
+          this.outPutLogs({
             type: 'success',
             content: `清空${count}数据成功`
           })
@@ -482,7 +485,7 @@ export default {
               }
             })
             if(body.length ==0 ) {
-              this.logs.unshift({
+              this.outPutLogs({
                 type: 'success',
                 content: '当前数据为空'
               })
@@ -508,7 +511,7 @@ export default {
                   { s: { r: 0, c: 5 }, e: { r: 1, c: 5 } }
                 ]
               }, fileName)
-              that.logs.unshift({
+              that.outPutLogs({
                 type: 'success',
                 content: '数据库导出数据成功'
               })
@@ -552,7 +555,7 @@ export default {
               send: 'noPhoto'
             })
             .then((res) => {
-              this.logs.unshift({
+              this.outPutLogs({
                 type: 'success',
                 content: '取消成功'
               })
@@ -584,7 +587,7 @@ export default {
               'sendType': 'hex', // 表示为16进制
               'value': 'AA754402' + intHex + uatUnit + '20' //  对应的值即可// 表示为发送的值
             })
-            this.logs.unshift({
+            this.outPutLogs({
               type: 'success',
               content: '定时拍照设置成功'
             })
@@ -598,12 +601,22 @@ export default {
               timeOut: time
             })
             .then((res) => {
-              this.logs.unshift({
+              this.outPutLogs({
                 type: 'success',
                 content: '定时拍照设置成功'
               })
             })
         }
+      },
+      outPutLogs({type, content}) {
+        // 当logs 多于10条后 那么就要让这个数组开始
+        if(this.logs.length >= 10) {
+          this.logs.pop()
+        }
+        this.logs.unshift({
+          type: type,
+          content: content + '    操作日期:' + getDate()
+        })
       },
       inputKeyUp (value) {
         value = value.replace(/[^\d]/g, '')
@@ -612,13 +625,13 @@ export default {
           // 如果是一个数字 那么就需要判断当前的值需要为0~255之间的值
           console.log(Number.isInteger(value), value)
           if (value < 0) {
-            this.logs.unshift({
+            this.outPutLogs({
               type: 'error',
               content: '当前的值小于0,请重新输入'
             })
           }
           if (value > 255) {
-            this.logs.unshift({
+            this.outPutLogs({
               type: 'error',
               content: '当前的值大于255,请重新输入'
             })
@@ -729,19 +742,19 @@ export default {
               // 这个时候需要判断这个res 的内容
               if (res.status === 2) {
                 // 表示这个其实是一个错误的信息
-                this.logs.unshift({
+                this.outPutLogs({
                   type: 'error',
                   content: '出现错误了'
                 })
               } else {
-                this.logs.unshift({
+                this.outPutLogs({
                   type: 'success',
                   content: '发送成功'
                 })
               }
               return
             }
-            this.logs.unshift({
+            this.outPutLogs({
               type: 'success',
               content: '发送成功'
             })
@@ -778,7 +791,7 @@ export default {
             send: this.camera.workType
           })
           .then((res) => {
-            this.logs.unshift({
+            this.outPutLogs({
               type: 'success',
               content: '发送成功'
             })
@@ -812,7 +825,7 @@ export default {
               // 这个时候需要判断这个res 的内容
               if (res.status === 2) {
                 // 表示这个其实是一个错误的信息
-                this.logs.unshift({
+                this.outPutLogs({
                   type: 'error',
                   content: '发生错误'
                 })
@@ -820,7 +833,7 @@ export default {
               return
             }
 
-            this.logs.unshift({
+            this.outPutLogs({
               type: 'success',
               content: '发送成功'
             })
@@ -861,14 +874,14 @@ export default {
           this.camera.isSetTime = json.isSetTime !== 0
           this.camera.unit = json.unit || 's'
           this.camera.defineTime = json.defineTime || 7
-          this.logs.unshift({
+          this.outPutLogs({
             type: 'success',
             content: '相机连接成功'
           })
         // 开始初始化usb的接口 开始提交数据
         }).catch(() => {
           this.initLoading = false
-          this.logs.unshift({
+          this.outPutLogs({
             type: 'error',
             content: '连接失败，请检查设备服务是否启动'
           })
@@ -1011,6 +1024,7 @@ export default {
             display: flex;
             flex-direction: row;
             padding: 15px 15px;
+            justify-content: center;
             .raspberry-camera-item-label {
                 font-size: 14px;
                 height: 28px;
