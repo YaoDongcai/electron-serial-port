@@ -91,11 +91,11 @@ export default {
       // 获取到这个数据
       console.log('value1', value)
       this.port.write(value.value, value.sendType, err => {
-        console.log('value2', value.value)
         if (err) {
+          Bus.$emit('receive', 'DD')
           return console.log('write Error', err.message)
         } else {
-          console.log('写入成功')
+          Bus.$emit('receive', 'AA')
         }
       })
     })
@@ -135,11 +135,13 @@ export default {
       port.on('open', (value) => {
         console.log('open', value)
         // 提示用户 串口打开成功
-        this.$message.success('串口打开成功')
+        Bus.$emit('receive', 'BB')
+        // this.$message.success('串口打开成功')
       })
       // 建立接收到数据时
       port.on('data', (data) => {
         // 需要在这个时候把数据传递给那边
+        console.log('on data', data)
         // 接收数据
         Bus.$emit('receive', data)
       })
@@ -172,6 +174,7 @@ export default {
       // 同时需要将port的串口方法调用
       this.port.close(() => {
         // 关闭成功后调用
+        Bus.$emit('receive', 'CC')
         this.setSerialPort(false)
       })
       // 开始设置串口的数据为空

@@ -227,11 +227,11 @@
 
 <script>
   import Bus from '../utils/bus.js'
-  import { mapState } from 'vuex'
-  import utils from '../utils/Excel'
-  import SerialConfig from './serialConfig'
-  const child = require('child_process')
-  import { getDate } from '../utils/index'
+import { mapState } from 'vuex'
+import utils from '../utils/Excel'
+import SerialConfig from './serialConfig'
+import { getDate } from '../utils/index'
+const child = require('child_process')
   const uatCommandCodeObj = {
     'on': 'AA7511020000CC', // 开机
     'off': 'AA7522020000FF', // 关机
@@ -264,7 +264,7 @@ export default {
           label: '1200万像素', // G16
           value: '1'
         }, {
-          label: '2000万像素',// G5x
+          label: '2000万像素', // G5x
           value: '2'
         }],
         logs: [], // 日志显示数组行列
@@ -416,6 +416,37 @@ export default {
         }]
       }
     },
+    created () {
+      Bus.$on('receive', (data) => {
+        //  如果接受到信息 那么就表示为接受成功
+        console.log('接受到参数', data)
+        if(data == 'BB') {
+          this.outPutLogs({
+            type: 'success',
+            content: '串口打开成功'
+          })
+        }
+        // 串口关闭成功
+        if(data == 'CC') {
+          this.outPutLogs({
+            type: 'success',
+            content: '串口关闭成功'
+          })
+        }
+        if(data == 'AA') {
+          this.outPutLogs({
+            type: 'success',
+            content: '串口数据发送成功'
+          })
+        }
+        if(data == 'DD') {
+          this.outPutLogs({
+            type: 'error',
+            content: '串口数据发送失败'
+          })
+        }
+      })
+    },
     methods: {
       versionChangeEvent (value) {
         if (value == '2') {
@@ -474,7 +505,7 @@ export default {
           .then((res) => {
             const title = [['拍照日期', '序号']]
             const body = []
-            const result = res.data.data.sort(function(a, b) {
+            const result = res.data.data.sort(function (a, b) {
               return a.index - b.index < 0
             })
             result.map(item => {
@@ -484,12 +515,12 @@ export default {
                 body.push(['', item.index])
               }
             })
-            if(body.length ==0 ) {
+            if (body.length == 0) {
               this.outPutLogs({
                 type: 'success',
                 content: '当前数据为空'
               })
-              return;
+              return
             }
             dialog.showSaveDialog({
               title: '保存文件Excel',
@@ -608,9 +639,9 @@ export default {
             })
         }
       },
-      outPutLogs({type, content}) {
+      outPutLogs ({type, content}) {
         // 当logs 多于10条后 那么就要让这个数组开始
-        if(this.logs.length >= 10) {
+        if (this.logs.length >= 10) {
           this.logs.pop()
         }
         this.logs.unshift({
@@ -699,9 +730,9 @@ export default {
         setTimeout(() => {
           this.handle2Click('SDToggleOff')
           // 这个时候再调用一个接口来挂载当前的数据即可
-          this.$http
-            .get(this.url + '/downLoadEnd').then(res => {
-            })
+          // this.$http
+          //   .get(this.url + '/downLoadEnd').then(res => {
+          //   })
         }, 300)
       },
       handleDownloadStartClick () {
@@ -712,14 +743,9 @@ export default {
           // 这个时候再调用一个接口来挂载当前的数据即可
           setTimeout(() => {
             // 需要调用download 接口
-            this.$http
-              .get(this.url + '/downLoadStart').then(res => {
-                setTimeout(() => {
-                  child.exec('explorer.exe "ftp://pi:raspberry@192.168.0.10"', function (err, sto) {
-                    console.log('err', err, sto)
-                  })
-                }, 1000)
-              })
+            child.exec('explorer.exe "ftp://pi:raspberry@192.168.0.10"', function (err, sto) {
+              console.log('err', err, sto)
+            })
           }, 3000) // 需要延时一秒来打开
         }, 1000)
       },
@@ -738,7 +764,7 @@ export default {
                 child.exec('explorer.exe "ftp://pi:raspberry@192.168.0.10"', function (err, sto) {
                   console.log('err', err, sto)
                 })
-              }, 1000) // 需要延时一秒来打开
+              }, 3000) // 需要延时一秒来打开
               // 这个时候需要判断这个res 的内容
               if (res.status === 2) {
                 // 表示这个其实是一个错误的信息
@@ -1053,7 +1079,7 @@ export default {
         }
     }
     &-set {
-        flex: 1;
+        width: 220px;
         margin-left: 15px;
         display: flex;
         position: relative;
@@ -1090,7 +1116,9 @@ export default {
         }
         &-item {
             display: flex;
+
             padding: 15px 15px;
+            justify-content: center;
         }
     }
     .raspberry-serial {
