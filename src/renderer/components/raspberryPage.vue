@@ -97,7 +97,7 @@
                 </el-button>
             </div>
             <div class="raspberry-set-subtitle">
-                日志显示
+                日志显示 <el-button type="text" @click="clearLog">清空日志</el-button>
             </div>
             <el-scrollbar style="height: 300px;">
                 <ul class="raspberry-set-logs-ul">
@@ -420,26 +420,26 @@ export default {
       Bus.$on('receive', (data) => {
         //  如果接受到信息 那么就表示为接受成功
         console.log('接受到参数', data)
-        if(data == 'BB') {
+        if (data == 'BB') {
           this.outPutLogs({
             type: 'success',
             content: '串口打开成功'
           })
         }
         // 串口关闭成功
-        if(data == 'CC') {
+        if (data == 'CC') {
           this.outPutLogs({
             type: 'success',
             content: '串口关闭成功'
           })
         }
-        if(data == 'AA') {
+        if (data == 'AA') {
           this.outPutLogs({
             type: 'success',
             content: '串口数据发送成功'
           })
         }
-        if(data == 'DD') {
+        if (data == 'DD') {
           this.outPutLogs({
             type: 'error',
             content: '串口数据发送失败'
@@ -448,6 +448,9 @@ export default {
       })
     },
     methods: {
+      clearLog() {
+        this.logs = []
+      },
       versionChangeEvent (value) {
         if (value == '2') {
           this.workTypeList = [{
@@ -725,21 +728,13 @@ export default {
           })
       },
       handleDownloadEndClick () {
-        this.handle2Click('SDOff')
-        // 300ms 后开始再次调用新的参数
-        setTimeout(() => {
-          this.handle2Click('SDToggleOff')
-          // 这个时候再调用一个接口来挂载当前的数据即可
-          // this.$http
-          //   .get(this.url + '/downLoadEnd').then(res => {
-          //   })
-        }, 300)
+        this.handle2Click('SDToggleOff')
       },
       handleDownloadStartClick () {
         this.handle2Click('SDToggleOn')
         // 300ms 后开始再次调用新的参数
         setTimeout(() => {
-          this.handle2Click('SDOn')
+          // this.handle2Click('SDOn')
           // 这个时候再调用一个接口来挂载当前的数据即可
           setTimeout(() => {
             // 需要调用download 接口
