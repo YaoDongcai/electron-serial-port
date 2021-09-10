@@ -1,7 +1,6 @@
 'use strict'
 
 import { app, BrowserWindow, Menu } from 'electron'
-
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -20,9 +19,10 @@ function createWindow () {
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    height: 550,
     useContentSize: true,
-    width: 730,
+    minHeight: '900px',
+    minWidth: '600px',
+    show: false,
     webPreferences: {
       nodeIntegration: true, // 是否完整支持node
       webSecurity: false // 降低安全性 是为了dev 开发
@@ -32,7 +32,12 @@ function createWindow () {
   Menu.setApplicationMenu(null)
   // createMenu() native 创建menu  其实更好的方式是利用router 创建
   mainWindow.loadURL(winURL)
-
+  mainWindow.once('ready-to-show', () => {
+    setTimeout(() => {
+      mainWindow.maximize()
+      mainWindow.show()
+    }, 2000)
+  })
   mainWindow.on('closed', () => {
     mainWindow = null
   })

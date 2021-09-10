@@ -1,8 +1,9 @@
 <template>
   <div class="tab-page">
-    <el-row class="tab-page-row">
-      <el-col :span="24">
-          <raspberry-page></raspberry-page>
+    <raspberry-page></raspberry-page>
+    <!--<el-row class="tab-page-row">-->
+      <!--<el-col :span="24">-->
+
         <!--<el-tabs type="border-card">-->
             <!--<el-tab-pane label="树莓派设备控制">-->
             <!--</el-tab-pane>-->
@@ -42,28 +43,28 @@
             <!--<image-edit></image-edit>-->
           <!--</el-tab-pane>-->
         <!--</el-tabs>-->
-      </el-col>
-    </el-row>
+      <!--</el-col>-->
+    <!--</el-row>-->
   </div>
 </template>
 
 <script>
-import ImageEdit from './ImageEdit/index' // 图片管理
-import SendView from './sendView'
-import SerialConfig from './serialConfig'
-import SerialLog from './serialLog'
-import CameraCtrl from './cameraCtrl'
+// import ImageEdit from './ImageEdit/index' // 图片管理
+// import SendView from './sendView'
+// import SerialConfig from './serialConfig'
+// import SerialLog from './serialLog'
+// import CameraCtrl from './cameraCtrl'
 import RaspberryPage from './raspberryPage'
 import { mapState, mapMutations } from 'vuex'
 export default {
   name: 'tabPage',
   components: {
-    SendView,
-    SerialConfig,
-    SerialLog,
-    CameraCtrl,
-    RaspberryPage,
-    ImageEdit
+    // SendView,
+    // SerialConfig,
+    // SerialLog,
+    // CameraCtrl,
+    RaspberryPage
+    // ImageEdit
   },
   computed: {
     ...mapState({
@@ -100,10 +101,7 @@ export default {
 }
 .tab-page {
     /*width: 700px;*/
-  margin-top: 20px;
-  margin-left: 20px;
-  .tab-page-row {
-
-  }
+  width: 100%;
+  height: 100%;
 }
 </style>

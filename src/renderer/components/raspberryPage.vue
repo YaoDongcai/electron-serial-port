@@ -12,7 +12,7 @@
             </div>
             <div class="raspberry-camera-item">
                 <!-- 手动拍照 -->
-                <el-button style="width: 100%;" @click="handleClick('photo')" size="mini" type="primary">
+                <el-button icon="el-icon-camera" style="width: 100%;" @click="handleClick('photo')" size="mini" type="primary">
                     手动拍照</el-button>
             </div>
 
@@ -49,9 +49,9 @@
             </div>
             <div class="raspberry-camera-item">
                 <!-- 开机 和关机 -->
-                <p class="raspberry-btn"><el-button icon="el-icon-timer" @click="handleClick('audioStart')" size="mini" type="primary">
+                <p class="raspberry-btn"><el-button icon="el-icon-video-camera" @click="handleClick('audioStart')" size="mini" type="primary">
                     录像开始</el-button></p>
-                <p class="raspberry-btn"><el-button icon="el-icon-unlock" @click="handleClick('audioEnd')" size="mini" type="danger">
+                <p class="raspberry-btn"><el-button icon="el-icon-video-pause" @click="handleClick('audioEnd')" size="mini" type="danger">
                     录像结束</el-button></p>
             </div>
             <div class="raspberry-camera-item">
@@ -70,7 +70,7 @@
         <!-- 这个是设置页面-->
         <div class="raspberry-set">
             <label class="raspberry-set-title">相机设置</label>
-            <div class="raspberry-set-item">
+            <div class="raspberry-set-item" style="min-height: 200px;">
                 <div class="button-group">
                     <div class="outter-circle">
                         <div class="inner-parts brown"  @click="handleClick('menuUp')">
@@ -91,15 +91,15 @@
                     </div>
                 </div>
             </div>
-            <div class="raspberry-set-item" style="margin-top: 30px;">
-                <el-button style="width: 100%;" size="mini" type="primary" @click="handleClick('menuOk')">
+            <div class="raspberry-set-item">
+                <el-button icon="el-icon-thumb" style="width: 100%;min-height:30px;" size="mini" type="primary" @click="handleClick('menuOk')">
                     菜单确定
                 </el-button>
             </div>
             <div class="raspberry-set-subtitle">
                 日志显示 <el-button type="text" @click="clearLog">清空日志</el-button>
             </div>
-            <el-scrollbar style="height: 300px;">
+            <el-scrollbar style="height: 100%;">
                 <ul class="raspberry-set-logs-ul">
                     <li class="logs-li" v-for="item in logs">
                         <p :class="item.type"> {{ item.content }}</p>
@@ -133,31 +133,31 @@
                 <label class="raspberry-controller-title">网络控制</label>
                 <!-- IP 显示 -->
 
-                <!--<div class="raspberry-controller-item">-->
-                    <!--<el-button :loading="initLoading" icon="el-icon-switch-button" style="width: 100%;" size="mini" type="success" @click="init">连接相机</el-button>-->
-                <!--</div>-->
                 <div class="raspberry-controller-item">
-                    <label class="raspberry-controller-item-label">相机选择</label>
-                    <span style="width: 100px;">
-                    <el-select @change="versionChangeEvent"  v-model="camera.versions">
-                        <el-option :key="index" v-for="(item, index) in versionsList" :label="item.label"  :value="item.value"></el-option>
-                    </el-select>
-                    </span>
-                    <span>
-                    <el-button @click="init" type="primary" size="mini">连接相机</el-button>
-                    </span>
-                    <!-- 版本切换 -->
-                    <!-- 低配版本的配置级别和高配版本是不一样的 -->
-                    <!--<label class="raspberry-controller-item-label">版本切换</label>-->
+                    <el-button :loading="initLoading" icon="el-icon-switch-button" style="width: 100%;" size="mini" type="success" @click="init">连接相机</el-button>
+                </div>
+                <!--<div class="raspberry-controller-item">-->
+                    <!--<label class="raspberry-controller-item-label">相机选择</label>-->
                     <!--<span style="width: 100px;">-->
-                    <!--<el-select   v-model="camera.versionType">-->
-                        <!--<el-option :key="index" v-for="(item, index) in versionList" :label="item.label"  :value="item.value"></el-option>-->
+                    <!--<el-select @change="versionChangeEvent"  v-model="camera.versions">-->
+                        <!--<el-option :key="index" v-for="(item, index) in versionsList" :label="item.label"  :value="item.value"></el-option>-->
                     <!--</el-select>-->
                     <!--</span>-->
                     <!--<span>-->
-                    <!--<el-button @click="choiseVersion" type="primary" size="mini">确定</el-button>-->
+                    <!--<el-button @click="init" type="primary" size="mini">连接相机</el-button>-->
                     <!--</span>-->
-                </div>
+                    <!--&lt;!&ndash; 版本切换 &ndash;&gt;-->
+                    <!--&lt;!&ndash; 低配版本的配置级别和高配版本是不一样的 &ndash;&gt;-->
+                    <!--&lt;!&ndash;<label class="raspberry-controller-item-label">版本切换</label>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<span style="width: 100px;">&ndash;&gt;-->
+                    <!--&lt;!&ndash;<el-select   v-model="camera.versionType">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<el-option :key="index" v-for="(item, index) in versionList" :label="item.label"  :value="item.value"></el-option>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</el-select>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</span>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<span>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<el-button @click="choiseVersion" type="primary" size="mini">确定</el-button>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</span>&ndash;&gt;-->
+                <!--</div>-->
                 <!--<label class="raspberry-controller-title">串口连接</label>-->
             </div>
         </div>
@@ -167,48 +167,6 @@
                 <serial-config></serial-config>
             </div>
         </div>
-
-        <!--<el-row :gutter="15">-->
-            <!--<el-col :span="8">-->
-                <!--<p class="raspberry-title">相机工作模式设置</p>-->
-                <!--<el-select @change="workTypeChange" class="raspberry-select" v-model="camera.workType" >-->
-                    <!--<el-option :key="index" v-for="(item, index) in workTypeList" :label="item.label" :value="item.value"></el-option>-->
-                <!--</el-select>-->
-            <!--</el-col>-->
-            <!--<el-col :span="8">-->
-                <!--<p class="raspberry-title">相机曝光补偿量设置</p>-->
-                <!--<el-select class="raspberry-select" v-model="camera.exposure" >-->
-                    <!--<el-option :key="index" v-for="(item, index) in exposureList"  :value="item.value"> {{ item.label }}</el-option>-->
-                <!--</el-select>-->
-            <!--</el-col>-->
-            <!--<el-col :span="8">-->
-                <!--<p class="raspberry-title">串口通信波特率设置</p>-->
-                <!--<el-select class="raspberry-select" v-model="camera.baudRate" >-->
-                    <!--<el-option :key="index" v-for="(item, index) in baudRateList" :label="item.label"  :value="item.value"></el-option>-->
-                <!--</el-select>-->
-            <!--</el-col>-->
-        <!--</el-row>-->
-
-        <!--<el-row :gutter="15">-->
-            <!--<el-col :span="8">-->
-                <!--<p class="raspberry-title">外接闪光灯选择</p>-->
-                <!--<el-select class="raspberry-select" v-model="camera.flashCode" >-->
-                    <!--<el-option :key="index" v-for="(item, index) in flashCodeList" :label="item.label"  :value="item.value"> </el-option>-->
-                <!--</el-select>-->
-            <!--</el-col>-->
-
-            <!--<el-col :span="4">-->
-                <!--<p class="raspberry-btn">-->
-                    <!--<el-button size="mini" type="primary" @click="showSetIP()">-->
-                        <!--设置IP-->
-                    <!--</el-button>-->
-                <!--</p>-->
-                <!--<p class="raspberry-btn"><el-button @click="handle2Click('SDToggleOn')" size="mini" type="primary">-->
-                    <!--SD卡通电</el-button></p>-->
-                <!--<p class="raspberry-btn"><el-button @click="handle2Click('SDOn')" size="mini" type="primary">-->
-                    <!--USB通电</el-button></p>-->
-            <!--</el-col>-->
-        <!--</el-row>-->
         <el-dialog title="IP设置" :visible.sync="dialogVisible">
             <div class="ip-ul" :key="index" v-for="(IpItem, index) in lists">
                 <label class="ip-ul-label">{{ IpItem.label }}</label>
@@ -413,10 +371,18 @@ export default {
         }, {
           label: 'AUTO模式',
           value: 'AUTO'
+        }, {
+          label: '混合模式',
+          value: 'MIX'
+        }, {
+          label: '摄像模式',
+          value: 'VIDEO'
         }]
       }
     },
     created () {
+      // 初始化一些数据
+      // this.init()
       Bus.$on('receive', (data) => {
         //  如果接受到信息 那么就表示为接受成功
         console.log('接受到参数', data)
@@ -884,8 +850,8 @@ export default {
         const dateTempHMS = retDate.nHour + ':' + retDate.nMinutes + ':' + retDate.nSeconds
         this.$http.post(this.url + '/initGPIOController', {
           dateYMD: dateTempYMD,
-          dateHMS: dateTempHMS,
-          versionType: this.camera.versions // 摄像机的版本
+          dateHMS: dateTempHMS
+          // versionType: this.camera.versions // 摄像机的版本
         }).then(res => {
           // 获取了所有的数据
           this.initLoading = false
@@ -912,7 +878,7 @@ export default {
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
     .el-input__inner {
         font-size: 12px;
     }
@@ -935,13 +901,10 @@ export default {
     }
     .button-group {
         padding-top: 20px;
-        width: 150px;
-        height: 150px;
         /*background-color: pink;*/
     }
     .outter-circle {
         position: relative;
-        margin-left: 10px;
         width: 140px;
         height: 140px;
         background-color: lightcyan;
@@ -997,11 +960,12 @@ export default {
 // 树莓派的样式
 .raspberry {
     width: 100%;
-    height: 80vh;
+    height: 100%;
     display: flex;
+    padding: 20px;
     &-col {
         display: flex;
-        /*flex: 1;*/
+        flex: 1;
         flex-direction: column;
         .raspberry-controller {
             /* 数据控制 */
@@ -1009,6 +973,7 @@ export default {
             display: flex;
             margin-left: 15px;
             position: relative;
+            padding: 10px;
             flex-direction: column;
             border: medium double black;
             &-item {
@@ -1074,12 +1039,12 @@ export default {
         }
     }
     &-set {
-        width: 220px;
-        margin-left: 15px;
+        flex: 1;
         display: flex;
         position: relative;
         flex-direction: column;
         border: medium double black;
+        margin-left: 15px;
         &-subtitle {
             font-size: 14px;
             margin-left: 18px;
