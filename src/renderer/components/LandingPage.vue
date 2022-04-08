@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import TabPage from './tabPage'
+import TabPage from './PWM-Page'
 export default {
   name: 'landing-page',
   components: { TabPage },
